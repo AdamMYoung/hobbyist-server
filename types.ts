@@ -59,3 +59,9 @@ export enum FeedSortType {
     Month = 'Month',
     Year = 'Year',
 }
+
+export type Auth0UserProfile = {
+    emailAddress: string;
+    username: string;
+    profileSrc: string;
+};

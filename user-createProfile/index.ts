@@ -1,18 +1,25 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
-import { getUsersContainer } from '../cosmosDbUtils';
-import { Profile } from '../types';
+import { cosmos, model, request } from '../utils';
 
-const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    context.log('User-CreateProfile was triggered.');
-    const name = req.query.name || (req.body && req.body.name);
-    const responseMessage = name
-        ? 'Hello, ' + name + '. This HTTP triggered function executed successfully.'
-        : 'This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.';
+const createProfile: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
+    if (!(await request.isValidRequest(context))) {
+        return;
+    }
+
+    if (!model.isAuth0UserProfile(req.body)) {
+        context.res = { status: 400 };
+        return;
+    }
+
+    //Do things here with the element.
+    const user = req.body;
+    const userContainer = await cosmos.getUsersContainer();
+    const insertedUser = await userContainer.items.create(user);
 
     context.res = {
         status: 201,
-        body: responseMessage,
+        body: await insertedUser.item.read(),
     };
 };
 
-export default httpTrigger;
+export default createProfile;

@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@azure/cosmos": "^3.9.3",
-    "@types/node": "^14.14.11"
+    "@types/node": "^14.14.11",
+    "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
     "@azure/functions": "^1.0.2-beta2",
+    "@types/jsonwebtoken": "^8.5.0",
     "typescript": "^3.3.3"
   }
 }
