@@ -1,6 +1,13 @@
 import { CosmosClient } from '@azure/cosmos';
+import { Agent } from 'https';
 
-const client = new CosmosClient({ endpoint: process.env.COSMOS_DB_ENDPOINT, key: process.env.COSMOS_DB_KEY });
+const client = new CosmosClient({
+    endpoint: process.env.COSMOS_DB_ENDPOINT,
+    key: process.env.COSMOS_DB_KEY,
+    agent: new Agent({
+        rejectUnauthorized: process.env.NODE_ENV !== 'development',
+    }),
+});
 
 const getDatabase = async () => {
     const { database } = await client.databases.createIfNotExists({ id: 'hobbyist-db' });
