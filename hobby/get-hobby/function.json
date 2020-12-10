@@ -1,11 +1,11 @@
 {
     "bindings": [
         {
-            "authLevel": "anonymous",
+            "authLevel": "function",
             "type": "httpTrigger",
             "direction": "in",
             "name": "req",
-            "methods": ["post"]
+            "methods": ["get", "post"]
         },
         {
             "type": "http",
@@ -13,5 +13,5 @@
             "name": "res"
         }
     ],
-    "scriptFile": "../dist/user-createProfile/index.js"
+    "scriptFile": "../dist/get-hobby/index.js"
 }

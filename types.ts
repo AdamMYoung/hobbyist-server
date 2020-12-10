@@ -61,6 +61,7 @@ export enum FeedSortType {
 }
 
 export type Auth0UserProfile = {
+    userId: string;
     emailAddress: string;
     username: string;
     profileSrc: string;
