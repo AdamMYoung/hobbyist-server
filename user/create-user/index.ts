@@ -1,8 +1,11 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
-import { cosmos, model, request } from '../../utils';
+import { cosmos, model, auth } from '../utils';
 
 const createProfile: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    if (!(await request.isValidRequest(context))) {
+    const token = auth.isAuthorized(req);
+
+    if (!token) {
+        context.res = { status: 401 };
         return;
     }
 
