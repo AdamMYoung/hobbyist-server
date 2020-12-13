@@ -14,10 +14,10 @@ const getKey = (header, callback) => {
 };
 
 /**
- * Validates if the request has came from an authorized user/API.
+ * Validates if the request has came from an authorized user.
  * @param request Request to validate.
  */
-export const isAuthorized = async (request: HttpRequest) => {
+export const isClientAuthorized = async (request: HttpRequest) => {
     const authorizationHeader = request.headers?.authorization;
     if (!authorizationHeader) {
         return null;
@@ -28,6 +28,26 @@ export const isAuthorized = async (request: HttpRequest) => {
             authorizationHeader,
             getKey,
             { algorithms: ['RS256'], audience: process.env.AUTO0_AUDIENCE },
+            (_, decoded) => resolve(decoded)
+        );
+    });
+};
+
+/**
+ * Validates if the request has came from an authorized API.
+ * @param request Request to validate.
+ */
+export const isApiAuthorized = async (request: HttpRequest) => {
+    const authorizationHeader = request.headers?.authorization;
+    if (!authorizationHeader) {
+        return null;
+    }
+
+    return await new Promise<object>((resolve) => {
+        verify(
+            authorizationHeader,
+            getKey,
+            { algorithms: ['RS256'], audience: process.env.AUTO0_ADMIN_AUDIENCE },
             (_, decoded) => resolve(decoded)
         );
     });
