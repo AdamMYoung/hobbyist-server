@@ -18,7 +18,7 @@ const getKey = (header, callback) => {
  * @param request Request to validate.
  */
 export const isClientAuthorized = async (request: HttpRequest) => {
-    const authorizationHeader = request.headers?.authorization;
+    const authorizationHeader = request.headers?.Authorization;
     if (!authorizationHeader) {
         return null;
     }
@@ -38,7 +38,7 @@ export const isClientAuthorized = async (request: HttpRequest) => {
  * @param request Request to validate.
  */
 export const isApiAuthorized = async (request: HttpRequest) => {
-    const authorizationHeader = request.headers?.authorization;
+    const authorizationHeader = request.headers?.Authorization;
     if (!authorizationHeader) {
         return null;
     }
