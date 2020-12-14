@@ -12,6 +12,8 @@ const createProfile: AzureFunction = async function (context: Context, req: Http
     }
 
     if (!model.isAuth0UserProfile(req.body)) {
+        context.log('Invalid request body');
+        context.log(req.body);
         context.res = { status: 400 };
         return;
     }
