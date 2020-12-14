@@ -1,3 +1,6 @@
 {
-    "name": "Azure"
+    "emailAddress": "bob@example.com",
+    "username": "bob123",
+    "profileSrc": "https://www.google.com",
+    "bannerSrc": "https://www.google.com"
 }
