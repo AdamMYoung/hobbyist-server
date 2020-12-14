@@ -6,9 +6,9 @@ export type Auth0UserProfile = {
 };
 
 export type UserProfileUpdateRequest = {
-    username: string;
-    profileSrc: string;
-    bannerSrc: string;
+    username?: string;
+    profileImgBase64?: string;
+    bannerImgBase64?: string;
 };
 
 //Generic

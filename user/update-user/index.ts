@@ -1,6 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
-import { UserProfileCosmosResult } from '../types';
+import { UserProfileCosmosResult, UserProfileUpdateRequest } from '../types';
 import { cosmos, model, auth } from '../utils';
+import { uploadImage } from '../utils/imageUtils';
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     const token = await auth.isAuthorized(req, context);
@@ -12,11 +13,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         return;
     }
 
-    //Payload is a valid model.
-    if (!model.isUserProfile(req.body)) {
-        context.res = { status: 400 };
-        return;
-    }
+    const body = req.body as UserProfileUpdateRequest;
 
     const userContainer = await cosmos.getUsersContainer();
     const userEntry = await userContainer.items
@@ -26,7 +23,26 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         })
         .fetchAll();
 
-    const updatedUserEntry = { ...userEntry.resources[0], ...req.body };
+    const updatedUserEntry = { ...userEntry.resources[0] };
+
+    if (body.username) {
+        updatedUserEntry['username'] = body.username;
+    }
+
+    if (body.profileImgBase64) {
+        updatedUserEntry['profileSrc'] = await uploadImage({
+            base64Image: body.profileImgBase64,
+            storageLocation: 'profile',
+        });
+    }
+
+    if (body.bannerImgBase64) {
+        updatedUserEntry['bannerSrc'] = await uploadImage({
+            base64Image: body.bannerImgBase64,
+            storageLocation: 'profile',
+        });
+    }
+
     const insertedEntry = await userContainer.items.upsert(updatedUserEntry);
 
     context.res = {
