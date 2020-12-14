@@ -39,6 +39,10 @@ export const isAuthorized = async (request: HttpRequest) => {
  * @param scopes Scopes to check for.
  */
 export const hasRequiredScopes = (token: any, scopes: string[]) => {
+    if (!token.scope) {
+        return false;
+    }
+
     scopes.forEach((scope) => {
         if (token.scope.includes(scope) === false) {
             return false;
