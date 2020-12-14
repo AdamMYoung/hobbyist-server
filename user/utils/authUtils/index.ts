@@ -18,7 +18,7 @@ const getKey = (header, callback) => {
  * @param request Request to validate.
  */
 export const isAuthorized = async (request: HttpRequest, context: Context) => {
-    const authorizationHeader = request.headers?.authorization;
+    const authorizationHeader = request.headers?.authorization.split(' ')[1];
     context.log('Auth header', authorizationHeader);
 
     if (!authorizationHeader) {
