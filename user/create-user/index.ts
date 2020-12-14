@@ -14,19 +14,26 @@ const createProfile: AzureFunction = async function (context: Context, req: Http
     if (!model.isAuth0UserProfile(req.body)) {
         context.log('Invalid request body');
         context.log(req.body);
+
         context.res = { status: 400 };
         return;
     }
 
     //Do things here with the element.
     const user = req.body;
-    const userContainer = await cosmos.getUsersContainer();
-    const insertedUser = await userContainer.items.create(user);
+    context.log('Request body: ', user);
+    try {
+        const userContainer = await cosmos.getUsersContainer();
+        const insertedUser = await userContainer.items.create(user);
 
-    context.res = {
-        status: 201,
-        body: await insertedUser.item.read(),
-    };
+        context.res = {
+            status: 201,
+            body: await insertedUser.item.read(),
+        };
+    } catch (e) {
+        context.log('DB insert failed.');
+        context.log(e);
+    }
 };
 
 export default createProfile;
