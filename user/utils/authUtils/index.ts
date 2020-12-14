@@ -19,7 +19,6 @@ const getKey = (header, callback) => {
  */
 export const isAuthorized = async (request: HttpRequest, context: Context) => {
     const authorizationHeader = request.headers?.authorization.split(' ')[1];
-    context.log('Auth header', authorizationHeader);
 
     if (!authorizationHeader) {
         return null;
@@ -31,7 +30,10 @@ export const isAuthorized = async (request: HttpRequest, context: Context) => {
             getKey,
             { algorithms: ['RS256'], audience: process.env.AUTH0_AUDIENCE },
             (err, decoded) => {
-                if (err) context.log('Failed to decode', err);
+                if (err) {
+                    context.log('Failed to decode token.');
+                    context.log('Trace:', err);
+                }
 
                 resolve(decoded);
             }
