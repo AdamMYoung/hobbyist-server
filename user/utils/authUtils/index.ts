@@ -40,7 +40,7 @@ export const isAuthorized = async (request: HttpRequest) => {
  */
 export const hasRequiredScopes = (token: any, scopes: string[]) => {
     scopes.forEach((scope) => {
-        if (token.scopes.includes(scope) === false) {
+        if (token.scope.includes(scope) === false) {
             return false;
         }
     });
