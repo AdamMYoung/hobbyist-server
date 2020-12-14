@@ -1,4 +1,4 @@
-import { HttpRequest } from '@azure/functions';
+import { Context, HttpRequest } from '@azure/functions';
 import { verify } from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 
@@ -17,8 +17,10 @@ const getKey = (header, callback) => {
  * Validates if the request has came from an authorized user.
  * @param request Request to validate.
  */
-export const isAuthorized = async (request: HttpRequest) => {
+export const isAuthorized = async (request: HttpRequest, context: Context) => {
     const authorizationHeader = request.headers?.authorization;
+    context.log('Auth header', authorizationHeader);
+
     if (!authorizationHeader) {
         return null;
     }
@@ -29,7 +31,7 @@ export const isAuthorized = async (request: HttpRequest) => {
             getKey,
             { algorithms: ['RS256'], audience: process.env.AUTH0_AUDIENCE },
             (err, decoded) => {
-                if (err) console.log(err);
+                if (err) context.log('Failed to decode', err);
 
                 resolve(decoded);
             }
