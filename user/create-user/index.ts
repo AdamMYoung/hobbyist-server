@@ -24,7 +24,7 @@ const createProfile: AzureFunction = async function (context: Context, req: Http
     context.log('Request body: ', user);
 
     const userContainer = await cosmos.getUsersContainer();
-    const insertedUser = await userContainer.items.create(user);
+    await userContainer.items.create(user);
 
     context.res = {
         status: 201,
