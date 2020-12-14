@@ -1,10 +1,12 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
 import { cosmos, model, auth } from '../utils';
+import { hasRequiredScopes } from '../utils/authUtils';
 
 const createProfile: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    const token = await auth.isApiAuthorized(req);
+    const token = await auth.isAuthorized(req);
+    const hasScopes = hasRequiredScopes(token, ['create:user']);
 
-    if (!token) {
+    if (!token || !hasScopes) {
         context.res = { status: 401 };
         return;
     }

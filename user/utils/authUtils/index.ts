@@ -17,7 +17,7 @@ const getKey = (header, callback) => {
  * Validates if the request has came from an authorized user.
  * @param request Request to validate.
  */
-export const isClientAuthorized = async (request: HttpRequest) => {
+export const isAuthorized = async (request: HttpRequest) => {
     const authorizationHeader = request.headers?.Authorization;
     if (!authorizationHeader) {
         return null;
@@ -34,21 +34,16 @@ export const isClientAuthorized = async (request: HttpRequest) => {
 };
 
 /**
- * Validates if the request has came from an authorized API.
- * @param request Request to validate.
+ * Checks if the passed token contains the required scopes.
+ * @param token Token to check scopes against.
+ * @param scopes Scopes to check for.
  */
-export const isApiAuthorized = async (request: HttpRequest) => {
-    const authorizationHeader = request.headers?.Authorization;
-    if (!authorizationHeader) {
-        return null;
-    }
-
-    return await new Promise<object>((resolve) => {
-        verify(
-            authorizationHeader,
-            getKey,
-            { algorithms: ['RS256'], audience: process.env.AUTO0_ADMIN_AUDIENCE },
-            (_, decoded) => resolve(decoded)
-        );
+export const hasRequiredScopes = (token: any, scopes: string[]) => {
+    scopes.forEach((scope) => {
+        if (token.scopes.includes(scope) === false) {
+            return false;
+        }
     });
+
+    return true;
 };

@@ -1,3 +1,6 @@
 {
-    "name": "Azure"
+   "userId": "userId|1234";
+    "emailAddress": "bob@example.com";
+    "username": "bob123";
+    "profileSrc": "https://www.google.com";
 }
