@@ -28,7 +28,11 @@ export const isAuthorized = async (request: HttpRequest) => {
             authorizationHeader,
             getKey,
             { algorithms: ['RS256'], audience: process.env.AUTH0_AUDIENCE },
-            (_, decoded) => resolve(decoded)
+            (err, decoded) => {
+                if (err) console.log(err);
+
+                resolve(decoded);
+            }
         );
     });
 };
