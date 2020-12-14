@@ -22,18 +22,14 @@ const createProfile: AzureFunction = async function (context: Context, req: Http
     //Do things here with the element.
     const user = req.body;
     context.log('Request body: ', user);
-    try {
-        const userContainer = await cosmos.getUsersContainer();
-        const insertedUser = await userContainer.items.create(user);
 
-        context.res = {
-            status: 201,
-            body: await insertedUser.item.read(),
-        };
-    } catch (e) {
-        context.log('DB insert failed.');
-        context.log(e);
-    }
+    const userContainer = await cosmos.getUsersContainer();
+    const insertedUser = await userContainer.items.create(user);
+
+    context.res = {
+        status: 201,
+        body: user,
+    };
 };
 
 export default createProfile;
