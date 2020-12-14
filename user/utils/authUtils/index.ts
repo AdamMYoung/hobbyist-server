@@ -27,7 +27,7 @@ export const isAuthorized = async (request: HttpRequest) => {
         verify(
             authorizationHeader,
             getKey,
-            { algorithms: ['RS256'], audience: process.env.AUTO0_AUDIENCE },
+            { algorithms: ['RS256'], audience: process.env.AUTH0_AUDIENCE },
             (_, decoded) => resolve(decoded)
         );
     });
