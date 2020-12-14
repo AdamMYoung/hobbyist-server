@@ -4,9 +4,8 @@ import { hasRequiredScopes } from '../utils/authUtils';
 
 const createProfile: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     const token = await auth.isAuthorized(req);
-    const hasScopes = hasRequiredScopes(token, ['create:user']);
 
-    if (!token || !hasScopes) {
+    if (!token || !hasRequiredScopes(token, ['create:user'])) {
         context.res = { status: 401 };
         return;
     }

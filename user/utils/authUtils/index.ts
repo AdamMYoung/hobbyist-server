@@ -7,7 +7,7 @@ const client = jwksClient({
 });
 
 const getKey = (header, callback) => {
-    client.getSigningKey(header.kid, function (err, key) {
+    client.getSigningKey(header.kid, (err, key) => {
         var signingKey = key.getPublicKey();
         callback(null, signingKey);
     });
@@ -18,7 +18,7 @@ const getKey = (header, callback) => {
  * @param request Request to validate.
  */
 export const isAuthorized = async (request: HttpRequest) => {
-    const authorizationHeader = request.headers?.Authorization;
+    const authorizationHeader = request.headers?.authorization;
     if (!authorizationHeader) {
         return null;
     }
@@ -39,7 +39,7 @@ export const isAuthorized = async (request: HttpRequest) => {
  * @param scopes Scopes to check for.
  */
 export const hasRequiredScopes = (token: any, scopes: string[]) => {
-    if (!token.scope) {
+    if (!token?.scope) {
         return false;
     }
 
