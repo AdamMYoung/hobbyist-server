@@ -1,14 +1,8 @@
-export type Auth0UserProfile = {
-    userId: string;
-    emailAddress: string;
-    username: string;
-    profileSrc: string;
-};
-
-export type UserProfileUpdateRequest = {
-    username?: string;
-    profileImgBase64?: string;
-    bannerImgBase64?: string;
+export type CreateHobbyRequest = {
+    name: string;
+    description: string;
+    profileImgBase64: string;
+    bannerImgBase64: string;
 };
 
 //Generic
@@ -23,6 +17,23 @@ export type AccessToken = {
     scope: string;
 };
 
+//Application Types
+export type UserProfile = {
+    userId: string;
+    emailAddress: string;
+    profileSrc: string;
+    username: string;
+    bannerSrc?: string;
+};
+
+export type Hobby = {
+    name: string;
+    description: string;
+    profileSrc: string;
+    bannerSrc: string;
+};
+
+//Cosmos Types
 export type CosmosResult = {
     id: string;
     _rid: string;
@@ -32,10 +43,4 @@ export type CosmosResult = {
     _ts: number;
 };
 
-export type UserProfileCosmosResult = CosmosResult & {
-    userId: string;
-    emailAddress: string;
-    profileSrc: string;
-    username: string;
-    bannerSrc?: string;
-};
+export type UserProfileCosmosResult = CosmosResult & UserProfile;

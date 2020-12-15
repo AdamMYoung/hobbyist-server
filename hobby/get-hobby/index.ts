@@ -1,17 +1,32 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions"
+import { AzureFunction, Context } from '@azure/functions';
+import { Hobby } from '../types';
+import { cosmos } from '../utils';
+import { withAuth } from '../utils/authUtils';
 
-const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    context.log('HTTP trigger function processed a request.');
-    const name = (req.query.name || (req.body && req.body.name));
-    const responseMessage = name
-        ? "Hello, " + name + ". This HTTP triggered function executed successfully."
-        : "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.";
+const httpTrigger: AzureFunction = withAuth(
+    { isTokenRequired: false },
+    async (context: Context, _, token): Promise<void> => {
+        const hobbyName = context.req.params.name;
+        const hobbyContainer = await cosmos.getHobbiesContainer();
 
-    context.res = {
-        // status: 200, /* Defaults to 200 */
-        body: responseMessage
-    };
+        const hobbyQuery = await hobbyContainer.items
+            .query<Hobby>({
+                query: 'SELECT name, description, profileSrc, bannerSrc FROM c WHERE c.name = @hobbyName LIMIT 1',
+                parameters: [{ name: '@hobbyName', value: hobbyName }],
+            })
+            .fetchAll();
 
-};
+        const hobby: Hobby = {
+            name: hobbyQuery.resources[0].name,
+            description: hobbyQuery.resources[0].description,
+            profileSrc: hobbyQuery.resources[0].profileSrc,
+            bannerSrc: hobbyQuery.resources[0].bannerSrc,
+        };
+
+        context.res = {
+            body: hobby,
+        };
+    }
+);
 
 export default httpTrigger;

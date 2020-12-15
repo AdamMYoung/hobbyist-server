@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export type ImageUpload = {
     base64Image: string;
-    storageLocation: 'profile' | 'post';
+    storageLocation: 'profile' | 'post' | 'hobby';
 };
 
 export const uploadImage = async (upload: ImageUpload): Promise<string> => {
