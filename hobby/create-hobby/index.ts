@@ -1,6 +1,6 @@
-import { AzureFunction, Context, HttpRequest } from '@azure/functions';
+import { AzureFunction, Context } from '@azure/functions';
 import { cosmos, image } from '../utils';
-import { CreateHobbyRequest, Hobby, HobbyDetail } from '../types';
+import { CreateHobbyRequest, HobbyDetail } from '../types';
 import { withAuth } from '../utils/authUtils';
 
 const httpTrigger: AzureFunction = withAuth<CreateHobbyRequest>(null, async (context: Context, body, token) => {
