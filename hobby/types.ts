@@ -33,6 +33,10 @@ export type Hobby = {
     bannerSrc: string;
 };
 
+export type HobbyDetail = Hobby & {
+    admins: string[];
+};
+
 //Cosmos Types
 export type CosmosResult = {
     id: string;

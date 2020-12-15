@@ -1,6 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
 import { cosmos, image } from '../utils';
-import { CreateHobbyRequest, Hobby } from '../types';
+import { CreateHobbyRequest, Hobby, HobbyDetail } from '../types';
 import { withAuth } from '../utils/authUtils';
 
 const httpTrigger: AzureFunction = withAuth<CreateHobbyRequest>(null, async (context: Context, body, token) => {
@@ -20,9 +20,15 @@ const httpTrigger: AzureFunction = withAuth<CreateHobbyRequest>(null, async (con
     const profileSrc = await image.uploadImage({ base64Image: body.profileImgBase64, storageLocation: 'hobby' });
     const bannerSrc = await image.uploadImage({ base64Image: body.bannerImgBase64, storageLocation: 'hobby' });
 
-    const newHobby = { name: body.name, description: body.description, profileSrc, bannerSrc };
+    const newHobby: HobbyDetail = {
+        name: body.name,
+        description: body.description,
+        profileSrc,
+        bannerSrc,
+        admins: [token.sub],
+    };
 
-    await hobbyContainer.items.create<Hobby>(newHobby);
+    await hobbyContainer.items.create<HobbyDetail>(newHobby);
 
     context.res = {
         status: 201,
