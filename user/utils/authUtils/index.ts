@@ -90,6 +90,6 @@ export function withAuth<T>(
             }
         }
 
-        return func(context, req.body, token);
+        return await func(context, req.body, token);
     };
 }
