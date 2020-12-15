@@ -1,7 +1,6 @@
 import { Context, HttpRequest } from '@azure/functions';
 import { verify } from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
-import { auth } from '..';
 import { AccessToken } from '../../types';
 
 const client = jwksClient({
@@ -19,7 +18,7 @@ const getKey = (header, callback) => {
  * Validates if the request has came from an authorized user.
  * @param request Request to validate.
  */
-export const isAuthorized = async (request: HttpRequest, context: Context): Promise<AccessToken | null> => {
+const isAuthorized = async (request: HttpRequest, context: Context): Promise<AccessToken | null> => {
     const authorizationHeader = request.headers?.authorization.split(' ')[1];
 
     if (!authorizationHeader) {
@@ -48,7 +47,7 @@ export const isAuthorized = async (request: HttpRequest, context: Context): Prom
  * @param token Token to check scopes against.
  * @param scopes Scopes to check for.
  */
-export const hasRequiredScopes = (token: AccessToken, scopes: string[]) => {
+const hasRequiredScopes = (token: AccessToken, scopes: string[]) => {
     if (!token?.scope) {
         return false;
     }
@@ -74,8 +73,8 @@ export function withAuth<T>(
     func: (context: Context, model?: T, token?: AccessToken) => Promise<void>
 ) {
     return async (context: Context, req: HttpRequest) => {
-        const token = await auth.isAuthorized(req, context);
-        const hasScopes = auth.hasRequiredScopes(token, scopes);
+        const token = await isAuthorized(req, context);
+        const hasScopes = hasRequiredScopes(token, scopes);
 
         //User is valid to perform the required operation.
         if (!token || !hasScopes) {
