@@ -18,7 +18,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     const userContainer = await cosmos.getUsersContainer();
     const userEntry = await userContainer.items
         .query<UserProfileCosmosResult>({
-            query: `SELECT 1 FROM c WHERE userId = @userId`,
+            query: `SELECT * FROM c WHERE userId = @userId`,
             parameters: [{ name: '@userId', value: token.sub }],
         })
         .fetchAll();
