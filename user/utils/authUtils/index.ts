@@ -1,6 +1,7 @@
 import { Context, HttpRequest } from '@azure/functions';
 import { verify } from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
+import { auth } from '..';
 import { AccessToken } from '../../types';
 
 const client = jwksClient({
@@ -60,3 +61,35 @@ export const hasRequiredScopes = (token: AccessToken, scopes: string[]) => {
 
     return true;
 };
+
+/**
+ *
+ * @param scopes Scopes to authenticate against.
+ * @param modelValidator Function used to validate the incoming model. Can be null to bypass.
+ * @param func Function to call if validation is successful.
+ */
+export function withAuth<T>(
+    scopes: string[],
+    modelValidator: (model: any) => boolean,
+    func: (context: Context, model?: T, token?: AccessToken) => Promise<void>
+) {
+    return async (context: Context, req: HttpRequest) => {
+        const token = await auth.isAuthorized(req, context);
+        const hasScopes = auth.hasRequiredScopes(token, scopes);
+
+        //User is valid to perform the required operation.
+        if (!token || !hasScopes) {
+            context.res = { status: 401 };
+            return;
+        }
+
+        if (modelValidator) {
+            if (!modelValidator(req.body)) {
+                context.res = { status: 400 };
+                return;
+            }
+        }
+
+        return func(context, req.body, token);
+    };
+}

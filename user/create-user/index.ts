@@ -1,31 +1,20 @@
-import { AzureFunction, Context, HttpRequest } from '@azure/functions';
-import { cosmos, model, auth } from '../utils';
+import { AzureFunction, Context } from '@azure/functions';
+import { Auth0UserProfile } from '../types';
+import { cosmos, model } from '../utils';
+import { withAuth } from '../utils/authUtils';
 
-const createProfile: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    const token = await auth.isAuthorized(req, context);
-    const hasScopes = auth.hasRequiredScopes(token, ['create:profile']);
+const createProfile: AzureFunction = withAuth<Auth0UserProfile>(
+    ['create:profile'],
+    model.isAuth0UserProfile,
+    async (context: Context, user): Promise<void> => {
+        const userContainer = await cosmos.getUsersContainer();
+        await userContainer.items.create(user);
 
-    if (!token || !hasScopes) {
-        context.res = { status: 401 };
-        return;
+        context.res = {
+            status: 201,
+            body: user,
+        };
     }
-
-    if (!model.isAuth0UserProfile(req.body)) {
-        context.res = { status: 400 };
-        return;
-    }
-
-    //Do things here with the element.
-    const user = req.body;
-    context.log('Request body: ', user);
-
-    const userContainer = await cosmos.getUsersContainer();
-    await userContainer.items.create(user);
-
-    context.res = {
-        status: 201,
-        body: user,
-    };
-};
+);
 
 export default createProfile;
