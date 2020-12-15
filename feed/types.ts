@@ -29,6 +29,19 @@ export type Comment = {
     replies?: Comment[];
 };
 
+export type Auth0UserProfile = {
+    userId: string;
+    emailAddress: string;
+    username: string;
+    profileSrc: string;
+};
+
+export type UserProfileUpdateRequest = {
+    username?: string;
+    profileImgBase64?: string;
+    bannerImgBase64?: string;
+};
+
 //Generic
 
 export type AccessToken = {
