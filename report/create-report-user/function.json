@@ -5,7 +5,7 @@
             "type": "httpTrigger",
             "direction": "in",
             "name": "req",
-            "methods": ["put"]
+            "methods": ["post"]
         },
         {
             "type": "http",
@@ -13,5 +13,5 @@
             "name": "res"
         }
     ],
-    "scriptFile": "../dist/update-hobby/index.js"
+    "scriptFile": "../dist/create-report-user/index.js"
 }

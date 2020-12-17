@@ -13,5 +13,5 @@
             "name": "res"
         }
     ],
-    "scriptFile": "../dist/update-hobby/index.js"
+    "scriptFile": "../dist/update-post-comment/index.js"
 }
