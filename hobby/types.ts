@@ -1,4 +1,5 @@
 export type CreateHobbyRequest = {
+    slug: string;
     name: string;
     description: string;
     profileImgBase64: string;
@@ -27,6 +28,7 @@ export type UserProfile = {
 };
 
 export type Hobby = {
+    slug: string;
     name: string;
     description: string;
     profileSrc: string;
