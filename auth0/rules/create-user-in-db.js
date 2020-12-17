@@ -20,7 +20,7 @@ function createDbUser(user, context, callback) {
                     user.username || user.email.split('@')[0] + Math.floor(Math.random() * 99999) + 1;
 
                 axios
-                    .put(
+                    .post(
                         `${configuration.SERVERLESS_API_URL}/users/me`,
                         {
                             userId: user.user_id,
