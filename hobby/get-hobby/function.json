@@ -5,8 +5,7 @@
             "type": "httpTrigger",
             "direction": "in",
             "name": "req",
-            "methods": ["get"],
-            "route": "/hobby/{slug:string}"
+            "methods": ["get"]
         },
         {
             "type": "http",
