@@ -16,12 +16,19 @@ const httpTrigger: AzureFunction = withAuth(
             })
             .fetchAll();
 
+        const fetchedHobby = hobbyQuery.resources[0];
+
+        if (!fetchedHobby) {
+            context.res = { status: 404 };
+            return;
+        }
+
         const hobby: Hobby = {
-            slug: hobbyQuery.resources[0].slug,
-            name: hobbyQuery.resources[0].name,
-            description: hobbyQuery.resources[0].description,
-            profileSrc: hobbyQuery.resources[0].profileSrc,
-            bannerSrc: hobbyQuery.resources[0].bannerSrc,
+            slug: fetchedHobby.slug,
+            name: fetchedHobby.name,
+            description: fetchedHobby.description,
+            profileSrc: fetchedHobby.profileSrc,
+            bannerSrc: fetchedHobby.bannerSrc,
         };
 
         context.res = {

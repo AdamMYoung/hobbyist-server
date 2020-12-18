@@ -9,7 +9,7 @@ const httpTrigger: AzureFunction = withAuth<CreateHobbyRequest>(null, async (con
     const hobbyContainer = await cosmos.getHobbiesContainer();
     const hobbyExists = await hobbyContainer.items
         .query({
-            query: 'SELECT count(c.id) FROM c WHERE c.slug = @hobbySlug',
+            query: 'SELECT VALUE count(c.id) FROM c WHERE c.slug = @hobbySlug',
             parameters: [{ name: '@hobbySlug', value: hobbySlug }],
         })
         .fetchAll();
