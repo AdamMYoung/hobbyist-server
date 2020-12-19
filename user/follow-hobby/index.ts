@@ -11,7 +11,7 @@ const followHobby: AzureFunction = withAuth(null, async (context: Context, _, to
 
     const { resources: users } = await userContainer.items
         .query<UserProfileCosmosResult>({
-            query: 'SELECT c.id, c["following"] FROM c WHERE c.userId = @userId',
+            query: 'SELECT * FROM c WHERE c.userId = @userId',
             parameters: [{ name: '@userId', value: token.sub }],
         })
         .fetchAll();
@@ -19,7 +19,7 @@ const followHobby: AzureFunction = withAuth(null, async (context: Context, _, to
 
     const { resources: hobbies } = await hobbyContainer.items
         .query<HobbyCosmosResult>({
-            query: 'SELECT c.id, c["followers"] FROM c WHERE c.slug = @hobbySlug',
+            query: 'SELECT * FROM c WHERE c.slug = @hobbySlug',
             parameters: [{ name: '@hobbySlug', value: hobbySlug }],
         })
         .fetchAll();
