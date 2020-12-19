@@ -8,11 +8,12 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         return;
     }
 
-    const filePath = uploadImage(req.body);
+    const filePath = await uploadImage(req.body);
+    context.log('Image uploaded', filePath);
 
     context.res = {
         status: 201,
-        body: filePath,
+        body: { url: filePath },
     };
 };
 

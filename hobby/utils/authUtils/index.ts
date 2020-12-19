@@ -86,13 +86,17 @@ export function withAuth<T>(
     return async (context: Context, req: HttpRequest) => {
         const { scopes, modelValidator, isTokenRequired } = { ...AuthDefaults, ...options };
 
-        const token = await isAuthorized(req, context);
-        const hasScopes = hasRequiredScopes(token, scopes);
+        let token;
 
-        //User is valid to perform the required operation.
-        if (isTokenRequired && (!token || !hasScopes)) {
-            context.res = { status: 401 };
-            return;
+        if (isTokenRequired) {
+            token = await isAuthorized(req, context);
+            const hasScopes = hasRequiredScopes(token, scopes);
+
+            //User is valid to perform the required operation.
+            if (!token || !hasScopes) {
+                context.res = { status: 401 };
+                return;
+            }
         }
 
         if (modelValidator) {

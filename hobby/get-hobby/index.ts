@@ -11,7 +11,8 @@ const httpTrigger: AzureFunction = withAuth(
 
         const hobbyQuery = await hobbyContainer.items
             .query<Hobby>({
-                query: 'SELECT name, description, profileSrc, bannerSrc FROM c WHERE c.slug = @hobbySlug LIMIT 1',
+                query:
+                    'SELECT c.slug, c.name, c.description, c.profileSrc, c.bannerSrc FROM c WHERE c.slug = @hobbySlug',
                 parameters: [{ name: '@hobbySlug', value: hobbySlug }],
             })
             .fetchAll();

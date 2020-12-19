@@ -6,5 +6,5 @@ export type ImageUpload = {
 };
 
 export const uploadImage = async (upload: ImageUpload): Promise<string> => {
-    return await axios.post(process.env.UPLOAD_FUNCTION_URL, upload).then((res) => res.data);
+    return await axios.post(process.env.UPLOAD_FUNCTION_URL, upload).then((res) => res.data.url);
 };
