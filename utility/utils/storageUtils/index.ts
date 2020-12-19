@@ -1,3 +1,4 @@
+import { Context } from '@azure/functions';
 import { BlobServiceClient } from '@azure/storage-blob';
 import base64Img from 'base64-img';
 import imagemin from 'imagemin';
@@ -8,7 +9,7 @@ import { ImageUpload } from '../../types';
 
 const client = BlobServiceClient.fromConnectionString(process.env.BLOB_STORAGE_CONNECTION_STRING);
 
-export const uploadImage = async (upload: ImageUpload): Promise<string> => {
+export const uploadImage = async (upload: ImageUpload, context: Context): Promise<string> => {
     const containerClient = client.getContainerClient(upload.storageLocation);
     await containerClient.createIfNotExists();
 
@@ -16,7 +17,13 @@ export const uploadImage = async (upload: ImageUpload): Promise<string> => {
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
     const image = await new Promise<string>((resolve) => {
-        base64Img.img(upload.base64Image, '', blobName, (_, filepath) => resolve(filepath));
+        base64Img.img(upload.base64Image, '', blobName, (error, filepath) => {
+            if (error) {
+                context.log('Image parsing failed', error);
+            }
+
+            resolve(filepath);
+        });
     });
 
     const minifiedImage = await imagemin([image], {
