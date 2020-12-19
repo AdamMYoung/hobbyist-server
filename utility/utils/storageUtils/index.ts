@@ -7,6 +7,7 @@ import imageminPngquant from 'imagemin-pngquant';
 import { fromBuffer } from 'file-type';
 
 import { ImageUpload } from '../../types';
+import { getId } from '../stringUtils';
 
 const client = BlobServiceClient.fromConnectionString(process.env.BLOB_STORAGE_CONNECTION_STRING);
 
@@ -19,7 +20,7 @@ export const uploadImage = async (upload: ImageUpload, context: Context): Promis
     const imageBuffer = Buffer.from(base64String, 'base64');
     const fileType = await fromBuffer(Buffer.from(base64String, 'base64'));
 
-    const blobName = `img-${v3()}.${fileType.ext}`;
+    const blobName = `img-${getId()}.${fileType.ext}`;
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
     // const minifiedImage = await imagemin.buffer(imageBuffer, {
