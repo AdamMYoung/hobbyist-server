@@ -19,30 +19,23 @@ const getKey = (header, callback) => {
  * @param request Request to validate.
  */
 const isAuthorized = async (request: HttpRequest, context: Context): Promise<AccessToken | null> => {
-    const authorizationHeader = request.headers?.authorization.split(' ')[1];
+    const authorizationHeader = request.headers?.authorization;
 
     if (!authorizationHeader) {
         return null;
     }
 
-    return await new Promise<AccessToken | null>((resolve) => {
-        try {
-            verify(
-                authorizationHeader,
-                getKey,
-                { algorithms: ['RS256'], audience: process.env.AUTH0_AUDIENCE },
-                (err, decoded) => {
-                    if (err) {
-                        context.log('Failed to decode token.');
-                        context.log('Trace:', err);
-                    }
+    const token = authorizationHeader.split(' ')[1];
 
-                    resolve(decoded === null ? null : (decoded as AccessToken));
-                }
-            );
-        } catch {
-            resolve(null);
-        }
+    return await new Promise<AccessToken | null>((resolve) => {
+        verify(token, getKey, { algorithms: ['RS256'], audience: process.env.AUTH0_AUDIENCE }, (err, decoded) => {
+            if (err) {
+                context.log('Failed to decode token.');
+                context.log('Trace:', err);
+            }
+
+            resolve(decoded === null ? null : (decoded as AccessToken));
+        });
     });
 };
 
