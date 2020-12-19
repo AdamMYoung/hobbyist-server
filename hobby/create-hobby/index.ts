@@ -24,17 +24,17 @@ const httpTrigger: AzureFunction = withAuth<CreateHobbyRequest>(
         const profileSrc = await image.uploadImage({ base64Image: body.profileImgBase64, storageLocation: 'hobby' });
         const bannerSrc = await image.uploadImage({ base64Image: body.bannerImgBase64, storageLocation: 'hobby' });
 
-        const newHobby: HobbyDetail = {
+        const newHobby: Partial<HobbyCosmosResult> = {
             slug: hobbySlug,
             name: body.name,
             description: body.description,
             profileSrc,
             bannerSrc,
             admins: [token.sub],
-            following: true,
+            followers: [token.sub],
         };
 
-        await hobbyContainer.items.create<Partial<HobbyCosmosResult>>({ ...newHobby, followers: [token.sub] });
+        await hobbyContainer.items.create<Partial<HobbyCosmosResult>>(newHobby);
 
         context.res = {
             status: 201,
