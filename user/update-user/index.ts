@@ -5,8 +5,7 @@ import { withAuth } from '../utils/authUtils';
 import { uploadImage } from '../utils/imageUtils';
 
 const httpTrigger: AzureFunction = withAuth<UserProfileUpdateRequest>(
-    ['update:user_profile'],
-    null,
+    { scopes: ['update:user_profile'] },
     async (context: Context, body, token): Promise<void> => {
         const userContainer = await cosmos.getUsersContainer();
         const userEntry = await userContainer.items
