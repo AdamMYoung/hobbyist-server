@@ -10,7 +10,7 @@ const httpTrigger: AzureFunction = withAuth<UserProfileUpdateRequest>(
         const userContainer = await cosmos.getUsersContainer();
         const userEntry = await userContainer.items
             .query<UserProfileCosmosResult>({
-                query: `SELECT * FROM c WHERE userId = @userId LIMIT 1`,
+                query: `SELECT * FROM c WHERE c.userId = @userId LIMIT 1`,
                 parameters: [{ name: '@userId', value: token.sub }],
             })
             .fetchAll();
