@@ -87,7 +87,7 @@ export function withAuth<T>(
         const hasScopes = hasRequiredScopes(token, scopes);
 
         //User is valid to perform the required operation.
-        if ((isTokenRequired && !token) || !hasScopes) {
+        if (isTokenRequired && (!token || !hasScopes)) {
             context.res = { status: 401 };
             return;
         }
