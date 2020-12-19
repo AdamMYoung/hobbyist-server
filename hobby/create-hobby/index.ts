@@ -1,6 +1,6 @@
 import { AzureFunction, Context } from '@azure/functions';
 import { cosmos, image } from '../utils';
-import { CreateHobbyRequest, HobbyDetail } from '../types';
+import { CreateHobbyRequest, HobbyCosmosResult, HobbyDetail } from '../types';
 import { withAuth } from '../utils/authUtils';
 
 const httpTrigger: AzureFunction = withAuth<CreateHobbyRequest>(
@@ -31,9 +31,10 @@ const httpTrigger: AzureFunction = withAuth<CreateHobbyRequest>(
             profileSrc,
             bannerSrc,
             admins: [token.sub],
+            following: true,
         };
 
-        await hobbyContainer.items.create<HobbyDetail>(newHobby);
+        await hobbyContainer.items.create<Partial<HobbyCosmosResult>>({ ...newHobby, followers: [token.sub] });
 
         context.res = {
             status: 201,

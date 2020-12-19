@@ -38,6 +38,7 @@ export type HobbyCosmosResult = CosmosResult & {
     description: string;
     profileSrc: string;
     bannerSrc: string;
+    admins: string[];
     followers: string[];
 };
 

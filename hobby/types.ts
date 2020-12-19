@@ -33,6 +33,7 @@ export type Hobby = {
     description: string;
     profileSrc: string;
     bannerSrc: string;
+    following: boolean;
 };
 
 export type HobbyDetail = Hobby & {
@@ -49,4 +50,21 @@ export type CosmosResult = {
     _ts: number;
 };
 
-export type UserProfileCosmosResult = CosmosResult & UserProfile;
+export type HobbyCosmosResult = CosmosResult & {
+    slug: string;
+    name: string;
+    description: string;
+    profileSrc: string;
+    bannerSrc: string;
+    admins: string[];
+    followers: string[];
+};
+
+export type UserProfileCosmosResult = CosmosResult & {
+    userId: string;
+    emailAddress: string;
+    profileSrc: string;
+    username: string;
+    bannerSrc?: string;
+    following: string[];
+};

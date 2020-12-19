@@ -1,5 +1,5 @@
 import { AzureFunction, Context } from '@azure/functions';
-import { Hobby } from '../types';
+import { Hobby, HobbyCosmosResult } from '../types';
 import { cosmos } from '../utils';
 import { withAuth } from '../utils/authUtils';
 
@@ -10,9 +10,9 @@ const httpTrigger: AzureFunction = withAuth(
         const hobbyContainer = await cosmos.getHobbiesContainer();
 
         const hobbyQuery = await hobbyContainer.items
-            .query<Hobby>({
+            .query<HobbyCosmosResult>({
                 query:
-                    'SELECT c.slug, c.name, c.description, c.profileSrc, c.bannerSrc FROM c WHERE c.slug = @hobbySlug',
+                    'SELECT c.slug, c.name, c.description, c.profileSrc, c.bannerSrc, c.followers FROM c WHERE c.slug = @hobbySlug',
                 parameters: [{ name: '@hobbySlug', value: hobbySlug }],
             })
             .fetchAll();
@@ -30,6 +30,7 @@ const httpTrigger: AzureFunction = withAuth(
             description: fetchedHobby.description,
             profileSrc: fetchedHobby.profileSrc,
             bannerSrc: fetchedHobby.bannerSrc,
+            following: token ? fetchedHobby.followers?.includes(token.sub) : false,
         };
 
         context.res = {
