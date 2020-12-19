@@ -1,13 +1,10 @@
 import { Context } from '@azure/functions';
 import { BlobServiceClient } from '@azure/storage-blob';
-import { v3 } from 'uuid';
-import imagemin from 'imagemin';
-import imageminJpegtran from 'imagemin-jpegtran';
-import imageminPngquant from 'imagemin-pngquant';
 import { fromBuffer } from 'file-type';
 
 import { ImageUpload } from '../../types';
 import { getId } from '../stringUtils';
+import Jimp from 'jimp';
 
 const client = BlobServiceClient.fromConnectionString(process.env.BLOB_STORAGE_CONNECTION_STRING);
 
@@ -23,15 +20,8 @@ export const uploadImage = async (upload: ImageUpload, context: Context): Promis
     const blobName = `img-${getId()}.${fileType.ext}`;
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-    const minifiedImage = await imagemin
-        .buffer(imageBuffer, {
-            plugins: [
-                imageminJpegtran(),
-                imageminPngquant({
-                    quality: [0.6, 0.7],
-                }),
-            ],
-        })
+    const minifiedImage = await Jimp.read(imageBuffer)
+        .then((img) => img.quality(60).getBufferAsync(fileType.mime))
         .catch((error) => context.log(error));
 
     if (!minifiedImage) {

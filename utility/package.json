@@ -12,9 +12,7 @@
   "dependencies": {
     "@azure/storage-blob": "^12.3.0",
     "file-type": "^16.0.1",
-    "imagemin": "^7.0.1",
-    "imagemin-jpegtran": "^7.0.0",
-    "imagemin-pngquant": "^9.0.1"
+    "jimp": "^0.16.1"
   },
   "devDependencies": {
     "@azure/functions": "^1.0.2-beta2",
