@@ -21,7 +21,7 @@ export const uploadImage = async (upload: ImageUpload, context: Context): Promis
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
     const minifiedImage = await Jimp.read(imageBuffer)
-        .then((img) => img.quality(60).getBufferAsync(fileType.mime))
+        .then((img) => img.quality(70).getBufferAsync(fileType.mime))
         .catch((error) => context.log(error));
 
     if (!minifiedImage) {
