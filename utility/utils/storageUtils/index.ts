@@ -1,6 +1,5 @@
 import { Context } from '@azure/functions';
 import { BlobServiceClient } from '@azure/storage-blob';
-import base64Img from 'base64-img';
 import imagemin from 'imagemin';
 import imageminJpegtran from 'imagemin-jpegtran';
 import imageminPngquant from 'imagemin-pngquant';
@@ -16,17 +15,7 @@ export const uploadImage = async (upload: ImageUpload, context: Context): Promis
     const blobName = 'img-' + encodeURIComponent(new Date().toISOString());
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-    const image = await new Promise<string>((resolve) => {
-        base64Img.img(upload.base64Image, '', blobName, (error, filepath) => {
-            if (error) {
-                context.log('Image parsing failed', error);
-            }
-
-            resolve(filepath);
-        });
-    });
-
-    const minifiedImage = await imagemin([image], {
+    const minifiedImage = await imagemin.buffer(Buffer.from(upload.base64Image, 'base64'), {
         plugins: [
             imageminJpegtran(),
             imageminPngquant({
@@ -35,6 +24,6 @@ export const uploadImage = async (upload: ImageUpload, context: Context): Promis
         ],
     });
 
-    await blockBlobClient.uploadData(minifiedImage[0].data);
+    await blockBlobClient.uploadData(minifiedImage);
     return `${process.env.BLOB_STORAGE_ACCOUNT}.blob.core.windows.net/${upload.storageLocation}/${blobName}`;
 };
