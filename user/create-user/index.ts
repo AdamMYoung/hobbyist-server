@@ -4,9 +4,8 @@ import { cosmos, model } from '../utils';
 import { withAuth } from '../utils/authUtils';
 
 const createProfile: AzureFunction = withAuth<Auth0UserProfile>(
-    ['create:profile'],
-    model.isAuth0UserProfile,
-    async (context: Context, user): Promise<void> => {
+    { scopes: ['create:profile'], modelValidator: model.isAuth0UserProfile },
+    async (context: Context, user, token) => {
         const userContainer = await cosmos.getUsersContainer();
         await userContainer.items.create(user);
 

@@ -12,7 +12,7 @@ const httpTrigger: AzureFunction = withAuth<CreateHobbyRequest>(
         const hobbyExists = await hobbyContainer.items
             .query({
                 query: 'SELECT VALUE count(c.id) FROM c WHERE c.slug = @hobbySlug',
-                parameters: [{ name: '@hobbySlug', value: hobbySlug }],
+                parameters: [{ name: '@hobbySlug', value: body.slug }],
             })
             .fetchAll();
 
