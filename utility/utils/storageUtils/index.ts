@@ -15,7 +15,7 @@ export const uploadImage = async (upload: ImageUpload, context: Context): Promis
 
     const base64String = upload.base64Image.split(',')[1];
 
-    const imageBuffer = Buffer.from(upload.base64Image, 'base64');
+    const imageBuffer = Buffer.from(base64String, 'base64');
     const fileType = await fromBuffer(Buffer.from(base64String, 'base64'));
 
     const blobName = `img-${encodeURIComponent(new Date().toISOString())}.${fileType.ext}`;
