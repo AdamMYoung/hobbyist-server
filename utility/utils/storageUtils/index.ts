@@ -1,5 +1,6 @@
 import { Context } from '@azure/functions';
 import { BlobServiceClient } from '@azure/storage-blob';
+import { v3 } from 'uuid';
 import imagemin from 'imagemin';
 import imageminJpegtran from 'imagemin-jpegtran';
 import imageminPngquant from 'imagemin-pngquant';
@@ -18,7 +19,7 @@ export const uploadImage = async (upload: ImageUpload, context: Context): Promis
     const imageBuffer = Buffer.from(base64String, 'base64');
     const fileType = await fromBuffer(Buffer.from(base64String, 'base64'));
 
-    const blobName = `img-${encodeURIComponent(new Date().toISOString())}.${fileType.ext}`;
+    const blobName = `img-${v3()}.${fileType.ext}`;
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
     // const minifiedImage = await imagemin.buffer(imageBuffer, {
