@@ -26,19 +26,23 @@ const isAuthorized = async (request: HttpRequest, context: Context): Promise<Acc
     }
 
     return await new Promise<AccessToken | null>((resolve) => {
-        verify(
-            authorizationHeader,
-            getKey,
-            { algorithms: ['RS256'], audience: process.env.AUTH0_AUDIENCE },
-            (err, decoded) => {
-                if (err) {
-                    context.log('Failed to decode token.');
-                    context.log('Trace:', err);
-                }
+        try {
+            verify(
+                authorizationHeader,
+                getKey,
+                { algorithms: ['RS256'], audience: process.env.AUTH0_AUDIENCE },
+                (err, decoded) => {
+                    if (err) {
+                        context.log('Failed to decode token.');
+                        context.log('Trace:', err);
+                    }
 
-                resolve(decoded === null ? null : (decoded as AccessToken));
-            }
-        );
+                    resolve(decoded === null ? null : (decoded as AccessToken));
+                }
+            );
+        } catch {
+            resolve(null);
+        }
     });
 };
 
@@ -48,7 +52,7 @@ const isAuthorized = async (request: HttpRequest, context: Context): Promise<Acc
  * @param scopes Scopes to check for.
  */
 const hasRequiredScopes = (token: AccessToken, scopes: string[]) => {
-    if (!token?.scope) {
+    if (!token || !token?.scope) {
         return false;
     }
 
@@ -86,17 +90,13 @@ export function withAuth<T>(
     return async (context: Context, req: HttpRequest) => {
         const { scopes, modelValidator, isTokenRequired } = { ...AuthDefaults, ...options };
 
-        let token;
+        const token = await isAuthorized(req, context);
+        const hasScopes = hasRequiredScopes(token, scopes);
 
-        if (isTokenRequired) {
-            token = await isAuthorized(req, context);
-            const hasScopes = hasRequiredScopes(token, scopes);
-
-            //User is valid to perform the required operation.
-            if (!token || !hasScopes) {
-                context.res = { status: 401 };
-                return;
-            }
+        //User is valid to perform the required operation.
+        if ((isTokenRequired && !token) || !hasScopes) {
+            context.res = { status: 401 };
+            return;
         }
 
         if (modelValidator) {
