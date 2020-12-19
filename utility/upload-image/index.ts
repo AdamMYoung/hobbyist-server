@@ -10,8 +10,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
     const filePath = await uploadImage(req.body, context);
 
-    if(!filePath) {
-        context.res = {500};
+    if (!filePath) {
+        context.res = { status: 500 };
         return;
     }
 
