@@ -23,14 +23,20 @@ export const uploadImage = async (upload: ImageUpload, context: Context): Promis
     const blobName = `img-${getId()}.${fileType.ext}`;
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-    const minifiedImage = await imagemin.buffer(imageBuffer, {
-        plugins: [
-            imageminJpegtran(),
-            imageminPngquant({
-                quality: [0.6, 0.7],
-            }),
-        ],
-    });
+    const minifiedImage = await imagemin
+        .buffer(imageBuffer, {
+            plugins: [
+                imageminJpegtran(),
+                imageminPngquant({
+                    quality: [0.6, 0.7],
+                }),
+            ],
+        })
+        .catch((error) => context.log(error));
+
+    if (!minifiedImage) {
+        return null;
+    }
 
     await blockBlobClient.uploadData(minifiedImage);
     return `https://${process.env.BLOB_STORAGE_ACCOUNT}.blob.core.windows.net/${upload.storageLocation}/${blobName}`;
