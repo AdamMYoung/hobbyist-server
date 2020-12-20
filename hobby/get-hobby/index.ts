@@ -22,6 +22,8 @@ const httpTrigger: AzureFunction = withAuth(
 
         const fetchedHobby = hobbyQuery.resources[0];
 
+        context.log('Fetched', fetchedHobby);
+
         if (!fetchedHobby) {
             context.res = { status: 404 };
             return;
