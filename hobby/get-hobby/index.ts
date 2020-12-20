@@ -15,7 +15,7 @@ const httpTrigger: AzureFunction = withAuth(
                     'SELECT TOP 1 c["slug"], c["name"], c["description"], c["profileSrc"], c["bannerSrc"], ARRAY_CONTAINS(c["followers"], @userId) AS isFollowing FROM c WHERE c["slug"] = @hobbySlug',
                 parameters: [
                     { name: '@hobbySlug', value: hobbySlug },
-                    { name: '@userId', value: token?.sub ?? '' },
+                    { name: '@userId', value: token?.sub },
                 ],
             })
             .fetchAll();
