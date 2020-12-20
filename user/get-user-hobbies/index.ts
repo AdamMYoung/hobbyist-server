@@ -23,6 +23,8 @@ const getUserHobbies: AzureFunction = withAuth(null, async (context: Context, _,
         return;
     }
 
+    context.log('HobbyIDs', followingHobbyIds);
+
     const { resources: hobbies } = await hobbyContainer.items
         .query<Partial<HobbyCosmosResult> & { isFollowing: boolean }>({
             query:
@@ -30,6 +32,8 @@ const getUserHobbies: AzureFunction = withAuth(null, async (context: Context, _,
             parameters: [{ name: '@hobbyIds', value: followingHobbyIds }],
         })
         .fetchAll();
+
+    context.log('Hobbies', hobbies);
 
     const parsedHobbies = hobbies.map(
         (hobby) =>
