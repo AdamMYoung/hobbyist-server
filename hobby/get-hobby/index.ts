@@ -9,6 +9,8 @@ const httpTrigger: AzureFunction = withAuth(
         const hobbySlug = context.req.query.slug;
         const hobbyContainer = await cosmos.getHobbiesContainer();
 
+        context.log(token);
+
         const hobbyQuery = await hobbyContainer.items
             .query<Partial<HobbyCosmosResult> & { isFollowing: boolean }>({
                 query:
