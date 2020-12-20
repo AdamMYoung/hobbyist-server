@@ -11,7 +11,7 @@ const getUserHobbies: AzureFunction = withAuth(null, async (context: Context, _,
 
     const { resources: users } = await userContainer.items
         .query<{ following: string[] }>({
-            query: `SELECT TOP 1 c.following FROM c WHERE c["username"] = @username`,
+            query: `SELECT TOP 1 c["following"] FROM c WHERE c["username"] = @username`,
             parameters: [{ name: '@username', value: username }],
         })
         .fetchAll();
