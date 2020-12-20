@@ -1,6 +1,6 @@
 import { AzureFunction, Context } from '@azure/functions';
 import { cosmos, image } from '../utils';
-import { CreateHobbyRequest, HobbyCosmosResult, HobbyDetail } from '../types';
+import { CreateHobbyRequest, HobbyCosmosResult } from '../types';
 import { withAuth } from '../utils/authUtils';
 
 const httpTrigger: AzureFunction = withAuth<CreateHobbyRequest>(
@@ -11,12 +11,12 @@ const httpTrigger: AzureFunction = withAuth<CreateHobbyRequest>(
         const hobbyContainer = await cosmos.getHobbiesContainer();
         const hobbyExists = await hobbyContainer.items
             .query({
-                query: 'SELECT EXISTS(SELECT * FROM c WHERE c["slug"] = @hobbySlug)',
+                query: 'SELECT TOP 1 c.id FROM c WHERE c["slug"] = @hobbySlug',
                 parameters: [{ name: '@hobbySlug', value: body.slug }],
             })
             .fetchAll();
 
-        if (hobbyExists.resources[0] === true) {
+        if (hobbyExists.resources[0] !== null) {
             context.res = { status: 409 };
             return;
         }
