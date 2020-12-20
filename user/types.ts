@@ -11,6 +11,15 @@ export type UserProfileUpdateRequest = {
     bannerImgBase64?: string;
 };
 
+export type Hobby = {
+    slug: string;
+    name: string;
+    description: string;
+    profileSrc: string;
+    bannerSrc: string;
+    following: boolean;
+};
+
 //Generic
 
 export type AccessToken = {
