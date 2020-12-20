@@ -26,7 +26,7 @@ const getUserHobbies: AzureFunction = withAuth(null, async (context: Context, _,
     const { resources: hobbies } = await hobbyContainer.items
         .query<Partial<HobbyCosmosResult> & { isFollowing: boolean }>({
             query:
-                'c["slug"], c["name"], c["description"], c["profileSrc"], c["bannerSrc"], ARRAY_CONTAINS(c["followers"], @userId) AS isFollowing FROM c WHERE c.id IN @hobbyIds',
+                'SELECT c["slug"], c["name"], c["description"], c["profileSrc"], c["bannerSrc"], ARRAY_CONTAINS(c["followers"], @userId) AS isFollowing FROM c WHERE c.id IN @hobbyIds',
             parameters: [{ name: '@hobbyIds', value: followingHobbyIds }],
         })
         .fetchAll();
