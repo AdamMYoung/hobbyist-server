@@ -12,7 +12,7 @@ const httpTrigger: AzureFunction = withAuth(
         const hobbyQuery = await hobbyContainer.items
             .query<Partial<HobbyCosmosResult> & { following: boolean }>({
                 query:
-                    'SELECT c.slug, c.name, c.description, c.profileSrc, c.bannerSrc, ARRAY_CONTAINS(c["following"], @userId) AS following FROM c WHERE c.slug = @hobbySlug',
+                    'SELECT TOP 1 c.slug, c.name, c.description, c.profileSrc, c.bannerSrc, ARRAY_CONTAINS(c["following"], @userId) AS following FROM c WHERE c.slug = @hobbySlug',
                 parameters: [
                     { name: '@hobbySlug', value: hobbySlug },
                     { name: '@userId', value: token?.sub ?? '' },
