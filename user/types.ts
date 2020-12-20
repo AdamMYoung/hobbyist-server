@@ -17,7 +17,7 @@ export type Hobby = {
     description: string;
     profileSrc: string;
     bannerSrc: string;
-    following: boolean;
+    following?: boolean;
 };
 
 //Generic

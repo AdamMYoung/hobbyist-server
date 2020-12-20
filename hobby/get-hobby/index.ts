@@ -37,7 +37,7 @@ const httpTrigger: AzureFunction = withAuth(
             description: fetchedHobby.description,
             profileSrc: fetchedHobby.profileSrc,
             bannerSrc: fetchedHobby.bannerSrc,
-            following: fetchedHobby.isFollowing ?? false,
+            following: token ? fetchedHobby.isFollowing : null,
         };
 
         context.res = {
