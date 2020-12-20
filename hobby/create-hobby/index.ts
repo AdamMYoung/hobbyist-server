@@ -11,12 +11,12 @@ const httpTrigger: AzureFunction = withAuth<CreateHobbyRequest>(
         const hobbyContainer = await cosmos.getHobbiesContainer();
         const hobbyExists = await hobbyContainer.items
             .query({
-                query: 'SELECT TOP 1 c.id FROM c WHERE c["slug"] = @hobbySlug',
+                query: 'SELECT TOP 1 c["id"] FROM c WHERE c["slug"] = @hobbySlug',
                 parameters: [{ name: '@hobbySlug', value: body.slug }],
             })
             .fetchAll();
 
-        if (hobbyExists.resources[0] !== null) {
+        if (hobbyExists.resources.length > 0) {
             context.res = { status: 409 };
             return;
         }
