@@ -12,7 +12,7 @@ const httpTrigger: AzureFunction = withAuth(
         const hobbyQuery = await hobbyContainer.items
             .query<HobbyCosmosResult>({
                 query:
-                    'SELECT c.slug, c.name, c.description, c.profileSrc, c.bannerSrc, c.followers FROM c WHERE c.slug = @hobbySlug',
+                    'SELECT c.slug, c.name, c.description, c.profileSrc, c.bannerSrc, c["followers"] FROM c WHERE c.slug = @hobbySlug',
                 parameters: [{ name: '@hobbySlug', value: hobbySlug }],
             })
             .fetchAll();
