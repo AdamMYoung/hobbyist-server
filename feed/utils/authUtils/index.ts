@@ -19,26 +19,23 @@ const getKey = (header, callback) => {
  * @param request Request to validate.
  */
 const isAuthorized = async (request: HttpRequest, context: Context): Promise<AccessToken | null> => {
-    const authorizationHeader = request.headers?.authorization.split(' ')[1];
+    const authorizationHeader = request.headers?.authorization;
 
     if (!authorizationHeader) {
         return null;
     }
 
-    return await new Promise<AccessToken | null>((resolve) => {
-        verify(
-            authorizationHeader,
-            getKey,
-            { algorithms: ['RS256'], audience: process.env.AUTH0_AUDIENCE },
-            (err, decoded) => {
-                if (err) {
-                    context.log('Failed to decode token.');
-                    context.log('Trace:', err);
-                }
+    const token = authorizationHeader.split(' ')[1];
 
-                resolve(decoded === null ? null : (decoded as AccessToken));
+    return await new Promise<AccessToken | null>((resolve) => {
+        verify(token, getKey, { algorithms: ['RS256'], audience: process.env.AUTH0_AUDIENCE }, (err, decoded) => {
+            if (err) {
+                context.log('Failed to decode token.');
+                context.log('Trace:', err);
             }
-        );
+
+            resolve(decoded === null ? null : (decoded as AccessToken));
+        });
     });
 };
 
@@ -48,7 +45,7 @@ const isAuthorized = async (request: HttpRequest, context: Context): Promise<Acc
  * @param scopes Scopes to check for.
  */
 const hasRequiredScopes = (token: AccessToken, scopes: string[]) => {
-    if (!token?.scope) {
+    if (!token || !token?.scope) {
         return false;
     }
 
@@ -61,6 +58,18 @@ const hasRequiredScopes = (token: AccessToken, scopes: string[]) => {
     return true;
 };
 
+type AuthOptions = {
+    scopes: string[];
+    modelValidator: (model: any) => boolean;
+    isTokenRequired: boolean;
+};
+
+const AuthDefaults: AuthOptions = {
+    scopes: [],
+    modelValidator: null,
+    isTokenRequired: true,
+};
+
 /**
  *
  * @param scopes Scopes to authenticate against.
@@ -68,16 +77,17 @@ const hasRequiredScopes = (token: AccessToken, scopes: string[]) => {
  * @param func Function to call if validation is successful.
  */
 export function withAuth<T>(
-    scopes: string[],
-    modelValidator: (model: any) => boolean,
+    options: Partial<AuthOptions>,
     func: (context: Context, model?: T, token?: AccessToken) => Promise<void>
 ) {
     return async (context: Context, req: HttpRequest) => {
+        const { scopes, modelValidator, isTokenRequired } = { ...AuthDefaults, ...options };
+
         const token = await isAuthorized(req, context);
         const hasScopes = hasRequiredScopes(token, scopes);
 
         //User is valid to perform the required operation.
-        if (!token || !hasScopes) {
+        if (isTokenRequired && (!token || !hasScopes)) {
             context.res = { status: 401 };
             return;
         }
