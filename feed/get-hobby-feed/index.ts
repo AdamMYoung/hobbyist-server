@@ -45,7 +45,7 @@ const httpTrigger: AzureFunction = withAuth(
 
         const usersQuery = await userContainer.items
             .query<Partial<UserProfileCosmosResult>>({
-                query: '',
+                query: 'SELECT * FROM c WHERE ARRAY_CONTAINS(@userIds, c["userId"])',
                 parameters: [{ name: '@userIds', value: Array.from(userIds) }],
             })
             .fetchAll();

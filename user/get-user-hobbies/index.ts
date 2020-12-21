@@ -10,10 +10,13 @@ const getUserHobbies: AzureFunction = withAuth(null, async (context: Context, _,
     const hobbyContainer = await cosmos.getHobbiesContainer();
 
     const { resources: users } = await userContainer.items
-        .query<{ following: string[] }>({
-            query: `SELECT TOP 1 c["following"] FROM c WHERE c["username"] = @username`,
-            parameters: [{ name: '@username', value: username }],
-        })
+        .query<{ following: string[] }>(
+            {
+                query: `SELECT TOP 1 c["following"] FROM c WHERE c["username"] = @username`,
+                parameters: [{ name: '@username', value: username }],
+            },
+            { partitionKey: 'username' }
+        )
         .fetchAll();
 
     const followingHobbyIds = users[0]?.following;
@@ -23,8 +26,6 @@ const getUserHobbies: AzureFunction = withAuth(null, async (context: Context, _,
         return;
     }
 
-    context.log('HobbyIDs', followingHobbyIds);
-
     const { resources: hobbies } = await hobbyContainer.items
         .query<Partial<HobbyCosmosResult> & { isFollowing: boolean }>({
             query:
@@ -32,8 +33,6 @@ const getUserHobbies: AzureFunction = withAuth(null, async (context: Context, _,
             parameters: [{ name: '@hobbyIds', value: followingHobbyIds }],
         })
         .fetchAll();
-
-    context.log('Hobbies', hobbies);
 
     const parsedHobbies = hobbies.map(
         (hobby) =>
