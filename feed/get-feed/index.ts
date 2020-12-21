@@ -7,6 +7,7 @@ const httpTrigger: AzureFunction = withAuth(
     { isTokenRequired: false },
     async function (context: Context, _, token): Promise<void> {
         const continuationToken = context.req.query.continuationToken;
+
         const postsContainer = await cosmos.getPostsContainer();
         const userContainer = await cosmos.getUsersContainer();
 
