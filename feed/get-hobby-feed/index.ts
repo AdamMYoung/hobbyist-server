@@ -6,7 +6,7 @@ import { withAuth } from '../utils/authUtils';
 const httpTrigger: AzureFunction = withAuth(
     { isTokenRequired: false },
     async function (context: Context): Promise<void> {
-        const hobbySlug = context.req.query.slugl;
+        const hobbySlug = context.req.query.slug;
         const continuationToken = context.req.query.continuationToken;
 
         const postsContainer = await cosmos.getPostsContainer();
