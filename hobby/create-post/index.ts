@@ -1,6 +1,6 @@
 import { AzureFunction, Context } from '@azure/functions';
 import { cosmos } from '../utils';
-import { CreatePostRequest, HobbyCosmosResult, PostCosmosResult } from '../types';
+import { CreatePostRequest, HobbyCosmosResult, Post, PostCosmosResult } from '../types';
 import { withAuth } from '../utils/authUtils';
 import { paramCase } from 'param-case';
 import { getId } from '../utils/stringUtils';
@@ -41,7 +41,14 @@ const httpTrigger: AzureFunction = withAuth<CreatePostRequest>(null, async (cont
 
     context.res = {
         status: 201,
-        body: newPost,
+        body: {
+            token: newPost.token,
+            slug: newPost.slug,
+            title: newPost.title,
+            content: newPost.content,
+            type: newPost.type,
+            creationDate: newPost.creationDate,
+        } as Post,
     };
 });
 

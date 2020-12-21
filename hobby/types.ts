@@ -46,6 +46,15 @@ export type HobbyDetail = Hobby & {
     admins: string[];
 };
 
+export type Post = {
+    token: string;
+    slug: string;
+    title: string;
+    content: string;
+    type: 'text' | 'image';
+    creationDate: Date;
+};
+
 //Cosmos Types
 export type CosmosResult = {
     id: string;
