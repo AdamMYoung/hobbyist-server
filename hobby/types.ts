@@ -47,6 +47,7 @@ export type HobbyDetail = Hobby & {
 };
 
 export type Post = {
+    hobbyId: string;
     token: string;
     slug: string;
     title: string;
