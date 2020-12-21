@@ -32,7 +32,7 @@ const httpTrigger: AzureFunction = withAuth(
                         query: `SELECT * FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"]) ORDER BY c["creationDate"] DESC`,
                         parameters: [{ name: '@hobbyIds', value: users[0].following }],
                     },
-                    { maxItemCount: 20, continuationToken }
+                    { maxItemCount: 20, continuationToken, partitionKey: 'id' }
                 )
                 .fetchNext();
 
@@ -55,7 +55,7 @@ const httpTrigger: AzureFunction = withAuth(
                 const profile = usersQuery.resources.filter((u) => u.userId === p.userId)[0];
 
                 return {
-                    hobbyId: p.hobbyId,
+                    slug: p.slug,
                     token: p.token,
                     title: p.title,
                     type: p.type,

@@ -10,13 +10,10 @@ const getUserHobbies: AzureFunction = withAuth(null, async (context: Context, _,
     const hobbyContainer = await cosmos.getHobbiesContainer();
 
     const { resources: users } = await userContainer.items
-        .query<{ following: string[] }>(
-            {
-                query: `SELECT TOP 1 c["following"] FROM c WHERE c["username"] = @username`,
-                parameters: [{ name: '@username', value: username }],
-            },
-            { partitionKey: 'username' }
-        )
+        .query<{ following: string[] }>({
+            query: `SELECT TOP 1 c["following"] FROM c WHERE c["username"] = @username`,
+            parameters: [{ name: '@username', value: username }],
+        })
         .fetchAll();
 
     const followingHobbyIds = users[0]?.following;
