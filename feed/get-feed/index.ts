@@ -102,7 +102,7 @@ const httpTrigger: AzureFunction = withAuth(
                 const profile = usersQuery.resources.filter((u) => u.userId === p.userId)[0];
 
                 return {
-                    hobbyId: p.hobbyId,
+                    slug: p.slug,
                     token: p.token,
                     title: p.title,
                     type: p.type,
