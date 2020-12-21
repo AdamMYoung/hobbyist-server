@@ -6,6 +6,12 @@ export type CreateHobbyRequest = {
     bannerImgBase64: string;
 };
 
+export type CreatePostRequest = {
+    title: string;
+    type: 'text' | 'image';
+    content: string;
+};
+
 //Generic
 
 export type AccessToken = {
@@ -67,4 +73,15 @@ export type UserProfileCosmosResult = CosmosResult & {
     username: string;
     bannerSrc?: string;
     following: string[];
+};
+
+export type PostCosmosResult = CosmosResult & {
+    hobbyId: string;
+    userId: string;
+    token: string;
+    slug: string;
+    title: string;
+    content: string;
+    type: 'text' | 'image';
+    creationDate: Date;
 };

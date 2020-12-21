@@ -26,8 +26,8 @@ export const getHobbiesContainer = async () => {
     return container;
 };
 
-export const getMeetupsContainer = async () => {
+export const getPostsContainer = async () => {
     const db = await getDatabase();
-    const { container } = await db.containers.createIfNotExists({ id: 'meetups' });
+    const { container } = await db.containers.createIfNotExists({ id: 'posts' });
     return container;
 };
