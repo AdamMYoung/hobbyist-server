@@ -13,8 +13,7 @@ const httpTrigger: AzureFunction = withAuth<CreatePostRequest>(null, async (cont
 
     const hobbyQuery = await hobbyContainer.items
         .query<Partial<HobbyCosmosResult>>({
-            query:
-                'SELECT TOP 1 c["slug"], c["name"], c["description"], c["profileSrc"], c["bannerSrc"] FROM c WHERE c["slug"] = @hobbySlug',
+            query: 'SELECT TOP 1 c["id"] FROM c WHERE c["slug"] = @hobbySlug',
             parameters: [{ name: '@hobbySlug', value: slug }],
         })
         .fetchAll();
