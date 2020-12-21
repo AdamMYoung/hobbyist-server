@@ -20,7 +20,7 @@ const httpTrigger: AzureFunction = withAuth(
             .fetchAll();
 
         if (!hobbies[0]) {
-            context.res = { status: 404 };
+            context.res = { status: 404, body: `Hobby not found. hobbySlug: ${hobbySlug}` };
             return;
         }
 
@@ -35,7 +35,7 @@ const httpTrigger: AzureFunction = withAuth(
             .fetchAll();
 
         if (!posts[0]) {
-            context.res = { status: 404 };
+            context.res = { status: 404, body: `Post not found. PostToken: ${postToken}` };
             return;
         }
 
