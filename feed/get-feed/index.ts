@@ -22,7 +22,7 @@ const httpTrigger: AzureFunction = withAuth(
                 .fetchAll();
 
             if (!users[0]) {
-                context.res = { status: 404 };
+                context.res = { status: 404, body: `User not found: ${token.sub}` };
                 return;
             }
 
@@ -37,10 +37,7 @@ const httpTrigger: AzureFunction = withAuth(
                 .fetchNext();
 
             if (postQuery.resources.length === 0) {
-                return;
-            }
-
-            if (postQuery.resources.length === 0) {
+                context.res = { status: 404, body: 'No posts found' };
                 return;
             }
 
@@ -87,6 +84,7 @@ const httpTrigger: AzureFunction = withAuth(
                 .fetchNext();
 
             if (postQuery.resources.length === 0) {
+                context.res = { status: 404, body: 'No posts found' };
                 return;
             }
 

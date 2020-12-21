@@ -21,7 +21,7 @@ const httpTrigger: AzureFunction = withAuth(
             .fetchAll();
 
         if (!hobbies[0]) {
-            context.res = { status: 404 };
+            context.res = { status: 404, body: `No hobby found for slug: ${hobbySlug}` };
             return;
         }
 
@@ -36,6 +36,7 @@ const httpTrigger: AzureFunction = withAuth(
             .fetchNext();
 
         if (postQuery.resources.length === 0) {
+            context.res = { status: 404, body: 'No posts found' };
             return;
         }
 
@@ -53,7 +54,7 @@ const httpTrigger: AzureFunction = withAuth(
             const profile = usersQuery.resources.filter((u) => u.userId === p.userId)[0];
 
             return {
-                hobbyId: p.hobbyId,
+                slug: p.slug,
                 token: p.token,
                 title: p.title,
                 type: p.type,

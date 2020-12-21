@@ -1,8 +1,8 @@
 export type FeedEntry = {
-    hobbyId: string;
+    slug: string;
     token: string;
     title: string;
-    content: string;
+    content: any;
     type: 'text' | 'image';
     creationDate: Date;
     profile: Profile;
