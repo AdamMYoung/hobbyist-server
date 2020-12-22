@@ -14,10 +14,13 @@ const httpTrigger: AzureFunction = withAuth(
         const userContainer = await cosmos.getUsersContainer();
 
         const { resources: hobbies } = await hobbyContainer.items
-            .query<HobbyCosmosResult>({
-                query: 'SELECT TOP 1 * FROM c WHERE c.slug = @hobbySlug',
-                parameters: [{ name: '@hobbySlug', value: hobbySlug }],
-            })
+            .query<HobbyCosmosResult>(
+                {
+                    query: 'SELECT TOP 1 * FROM c WHERE c["slug"] = @hobbySlug',
+                    parameters: [{ name: '@hobbySlug', value: hobbySlug }],
+                },
+                { partitionKey: 'slug' }
+            )
             .fetchAll();
 
         if (!hobbies[0]) {
@@ -74,8 +77,8 @@ const httpTrigger: AzureFunction = withAuth(
             const hobby = hobbyQuery.resources.filter((h) => h.id === p.hobbyId)[0];
 
             return {
-                slug: hobby.slug,
-                hobbyName: hobby.name,
+                slug: hobby?.slug,
+                hobbyName: hobby?.name,
                 token: p.token,
                 title: p.title,
                 type: p.type,

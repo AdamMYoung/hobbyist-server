@@ -67,7 +67,7 @@ const httpTrigger: AzureFunction = withAuth(
             const hobbyQuery = await hobbyContainer.items
                 .query<Partial<HobbyCosmosResult>>(
                     {
-                        query: 'SELECT c["slug"] FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
+                        query: 'SELECT c["slug"], c["name"] FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
                         parameters: [{ name: '@hobbyIds', value: Array.from(hobbyIds) }],
                     },
                     { partitionKey: 'id' }
@@ -79,8 +79,8 @@ const httpTrigger: AzureFunction = withAuth(
                 const hobby = hobbyQuery.resources.filter((h) => h.id === p.hobbyId)[0];
 
                 return {
-                    slug: hobby.slug,
-                    hobbyName: hobby.name,
+                    slug: hobby?.slug,
+                    hobbyName: hobby?.name,
                     token: p.token,
                     title: p.title,
                     type: p.type,
