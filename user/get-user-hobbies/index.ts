@@ -14,15 +14,14 @@ const getUserHobbies: AzureFunction = withAuth(null, async (context: Context, _,
             {
                 query: `SELECT TOP 1 c["following"] FROM c WHERE c["username"] = @username`,
                 parameters: [{ name: '@username', value: username }],
-            },
-            { partitionKey: 'username' }
+            }
         )
         .fetchAll();
 
     const followingHobbyIds = users[0]?.following;
 
     if (!followingHobbyIds) {
-        context.res = { status: 404 };
+        context.res = { status: 404, "User not found" };
         return;
     }
 
