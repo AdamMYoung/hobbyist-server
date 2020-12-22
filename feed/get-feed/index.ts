@@ -50,9 +50,6 @@ const httpTrigger: AzureFunction = withAuth(
                 hobbyIds.add(res.hobbyId);
             });
 
-            context.log('Hobbies', Array.from(hobbyIds));
-            context.log('Users', Array.from(userIds));
-
             const usersQuery = await userContainer.items
                 .query<Partial<UserProfileCosmosResult>>({
                     query:
@@ -114,9 +111,6 @@ const httpTrigger: AzureFunction = withAuth(
                 userIds.add(res.userId);
                 hobbyIds.add(res.hobbyId);
             });
-
-            context.log('Hobbies', Array.from(hobbyIds));
-            context.log('Users', Array.from(userIds));
 
             const usersQuery = await userContainer.items
                 .query<Partial<UserProfileCosmosResult>>({
