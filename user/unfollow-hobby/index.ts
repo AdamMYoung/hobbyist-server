@@ -20,6 +20,13 @@ const unfollowHobby: AzureFunction = withAuth(null, async (context: Context, _, 
         .fetchAll();
     const user = users[0];
 
+    if (!user) {
+        context.res = {
+            status: 404,
+            body: `User not found. User UID: ${token.sub}`,
+        };
+    }
+
     const { resources: hobbies } = await hobbyContainer.items
         .query<HobbyCosmosResult>(
             {
@@ -30,6 +37,13 @@ const unfollowHobby: AzureFunction = withAuth(null, async (context: Context, _, 
         )
         .fetchAll();
     const hobby = hobbies[0];
+
+    if (!hobby) {
+        context.res = {
+            status: 404,
+            body: `Hobby not found. Hobby slug: ${hobbySlug}`,
+        };
+    }
 
     if (user.following.includes(hobby.id)) {
         user.following.splice(user.following.indexOf(hobby.id), 1);
