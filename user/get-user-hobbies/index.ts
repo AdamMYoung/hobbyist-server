@@ -14,7 +14,8 @@ const getUserHobbies: AzureFunction = withAuth(null, async (context: Context, _,
             {
                 query: `SELECT TOP 1 c["following"] FROM c WHERE c["username"] = @username`,
                 parameters: [{ name: '@username', value: username }],
-            }
+            },
+            { partitionKey: 'username' }
         )
         .fetchAll();
 

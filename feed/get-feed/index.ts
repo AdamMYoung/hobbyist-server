@@ -74,6 +74,8 @@ const httpTrigger: AzureFunction = withAuth(
                 )
                 .fetchAll();
 
+            context.log('Hobbies', hobbyQuery.resources);
+
             const posts: FeedEntry[] = postQuery.resources.map<FeedEntry>((p) => {
                 const profile = usersQuery.resources.filter((u) => u.userId === p.userId)[0];
                 const hobby = hobbyQuery.resources.filter((h) => h.id === p.hobbyId)[0];
@@ -142,13 +144,15 @@ const httpTrigger: AzureFunction = withAuth(
                 )
                 .fetchAll();
 
+            context.log('Hobbies', hobbyQuery.resources);
+
             const posts: FeedEntry[] = postQuery.resources.map<FeedEntry>((p) => {
                 const profile = usersQuery.resources.filter((u) => u.userId === p.userId)[0];
                 const hobby = hobbyQuery.resources.filter((h) => h.id === p.hobbyId)[0];
 
                 return {
-                    slug: hobby.slug,
-                    hobbyName: hobby.name,
+                    slug: hobby?.slug,
+                    hobbyName: hobby?.name,
                     token: p.token,
                     title: p.title,
                     type: p.type,
