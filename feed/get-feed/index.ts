@@ -47,6 +47,7 @@ const httpTrigger: AzureFunction = withAuth(
 
             const userIds = new Set<string>();
             const hobbyIds = new Set<string>();
+
             postQuery.resources.forEach((res) => {
                 userIds.add(res.userId);
                 hobbyIds.add(res.hobbyId);

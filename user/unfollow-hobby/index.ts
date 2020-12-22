@@ -10,18 +10,24 @@ const unfollowHobby: AzureFunction = withAuth(null, async (context: Context, _, 
     const hobbyContainer = await cosmos.getHobbiesContainer();
 
     const { resources: users } = await userContainer.items
-        .query<UserProfileCosmosResult>({
-            query: 'SELECT TOP 1 * FROM c WHERE c["userId"] = @userId',
-            parameters: [{ name: '@userId', value: token.sub }],
-        })
+        .query<UserProfileCosmosResult>(
+            {
+                query: 'SELECT TOP 1 * FROM c WHERE c["userId"] = @userId',
+                parameters: [{ name: '@userId', value: token.sub }],
+            },
+            { partitionKey: 'userId' }
+        )
         .fetchAll();
     const user = users[0];
 
     const { resources: hobbies } = await hobbyContainer.items
-        .query<HobbyCosmosResult>({
-            query: 'SELECT TOP 1 * FROM c WHERE c["slug"] = @hobbySlug',
-            parameters: [{ name: '@hobbySlug', value: hobbySlug }],
-        })
+        .query<HobbyCosmosResult>(
+            {
+                query: 'SELECT TOP 1 * FROM c WHERE c["slug"] = @hobbySlug',
+                parameters: [{ name: '@hobbySlug', value: hobbySlug }],
+            },
+            { partitionKey: 'slug' }
+        )
         .fetchAll();
     const hobby = hobbies[0];
 
