@@ -15,10 +15,13 @@ const httpTrigger: AzureFunction = withAuth(
             const usersContainer = await cosmos.getUsersContainer();
 
             const { resources: users } = await usersContainer.items
-                .query<Partial<UserProfileCosmosResult>>({
-                    query: `SELECT TOP 1 c["following"] FROM c WHERE c["userId"] = @userId`,
-                    parameters: [{ name: '@userId', value: token.sub }],
-                })
+                .query<Partial<UserProfileCosmosResult>>(
+                    {
+                        query: `SELECT TOP 1 c["following"] FROM c WHERE c["userId"] = @userId`,
+                        parameters: [{ name: '@userId', value: token.sub }],
+                    },
+                    { partitionKey: 'userId' }
+                )
                 .fetchAll();
 
             if (!users[0]) {
@@ -45,10 +48,13 @@ const httpTrigger: AzureFunction = withAuth(
             postQuery.resources.forEach((res) => userIds.add(res.userId));
 
             const usersQuery = await userContainer.items
-                .query<Partial<UserProfileCosmosResult>>({
-                    query: '',
-                    parameters: [{ name: '@userIds', value: Array.from(userIds) }],
-                })
+                .query<Partial<UserProfileCosmosResult>>(
+                    {
+                        query: 'SELECT * FROM c WHERE ARRAY_CONTAINS(@userIds, c["userId"])',
+                        parameters: [{ name: '@userIds', value: Array.from(userIds) }],
+                    },
+                    { partitionKey: 'userId' }
+                )
                 .fetchAll();
 
             const posts: FeedEntry[] = postQuery.resources.map<FeedEntry>((p) => {
