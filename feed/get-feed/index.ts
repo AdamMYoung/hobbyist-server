@@ -53,6 +53,8 @@ const httpTrigger: AzureFunction = withAuth(
                 hobbyIds.add(res.hobbyId);
             });
 
+            context.log('Posts', postQuery.resources);
+
             const usersQuery = await userContainer.items
                 .query<Partial<UserProfileCosmosResult>>(
                     {
@@ -75,6 +77,7 @@ const httpTrigger: AzureFunction = withAuth(
                 .fetchAll();
 
             context.log('Hobbies', hobbyQuery.resources);
+            context.log('Users', usersQuery.resources);
 
             const posts: FeedEntry[] = postQuery.resources.map<FeedEntry>((p) => {
                 const profile = usersQuery.resources.filter((u) => u.userId === p.userId)[0];
