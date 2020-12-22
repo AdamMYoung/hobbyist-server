@@ -1,5 +1,5 @@
 import { AzureFunction, Context } from '@azure/functions';
-import { Hobby, HobbyCosmosResult, Post, PostCosmosResult } from '../types';
+import { Hobby, HobbyCosmosResult, Post, PostCosmosResult, UserProfileCosmosResult } from '../types';
 import { cosmos } from '../utils';
 import { withAuth } from '../utils/authUtils';
 
@@ -11,6 +11,7 @@ const httpTrigger: AzureFunction = withAuth(
 
         const postContainer = await cosmos.getPostsContainer();
         const hobbyContainer = await cosmos.getHobbiesContainer();
+        const usersContainer = await cosmos.getUsersContainer();
 
         const { resources: hobbies } = await hobbyContainer.items
             .query<Partial<HobbyCosmosResult>>({
@@ -39,8 +40,25 @@ const httpTrigger: AzureFunction = withAuth(
             return;
         }
 
+        const { resources: users } = await usersContainer.items
+            .query<Partial<UserProfileCosmosResult>>({
+                query: 'SELECT TOP 1 c["userId"], c["username"], c["profileSrc"] FROM c WHERE c["userId"] = @userId',
+                parameters: [{ name: '@userId', value: posts[0].userId }],
+            })
+            .fetchAll();
+
+        if (!users[0]) {
+            context.res = { status: 404, body: `User not found. User UID: ${posts[0].userId}` };
+            return;
+        }
+
         const post: Post = {
-            hobbyId: posts[0].hobbyId,
+            profile: {
+                username: users[0].username,
+                profileSrc: users[0].profileSrc,
+            },
+            hobbySlug: hobbies[0].slug,
+            hobbyName: hobbies[0].name,
             token: posts[0].token,
             slug: posts[0].slug,
             title: posts[0].title,

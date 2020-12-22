@@ -12,6 +12,11 @@ export type CreatePostRequest = {
     content: string;
 };
 
+export type Profile = {
+    profileSrc: string;
+    username: string;
+};
+
 //Generic
 
 export type AccessToken = {
@@ -22,15 +27,6 @@ export type AccessToken = {
     exp: number;
     iat: number;
     scope: string;
-};
-
-//Application Types
-export type UserProfile = {
-    userId: string;
-    emailAddress: string;
-    profileSrc: string;
-    username: string;
-    bannerSrc?: string;
 };
 
 export type Hobby = {
@@ -47,7 +43,9 @@ export type HobbyDetail = Hobby & {
 };
 
 export type Post = {
-    hobbyId: string;
+    profile: Profile;
+    hobbySlug: string;
+    hobbyName: string;
     token: string;
     slug: string;
     title: string;
