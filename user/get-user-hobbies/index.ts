@@ -22,7 +22,7 @@ const getUserHobbies: AzureFunction = withAuth(null, async (context: Context, _,
     const followingHobbyIds = users[0]?.following;
 
     if (!followingHobbyIds) {
-        context.res = { status: 404, "User not found" };
+        context.res = { status: 404, body: `User not found. Username: ${username}` };
         return;
     }
 
