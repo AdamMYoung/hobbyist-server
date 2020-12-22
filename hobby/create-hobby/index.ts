@@ -23,7 +23,7 @@ const httpTrigger: AzureFunction = withAuth<CreateHobbyRequest>(null, async (con
 
     const { resources: users } = await usersContainer.items
         .query<Partial<UserProfileCosmosResult>>({
-            query: 'SELECT TOP 1 c["userId"], c["username"], c["profileSrc"] FROM c WHERE c["userId"] = @userId',
+            query: 'SELECT TOP 1 * FROM c WHERE c["userId"] = @userId',
             parameters: [{ name: '@userId', value: token.sub }],
         })
         .fetchAll();
