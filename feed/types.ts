@@ -1,5 +1,5 @@
 export type FeedEntry = {
-    slug: string;
+    hobbySlug: string;
     hobbyName: string;
     token: string;
     title: string;

@@ -44,8 +44,6 @@ export type HobbyDetail = Hobby & {
 
 export type Post = {
     profile: Profile;
-    hobbySlug: string;
-    hobbyName: string;
     token: string;
     slug: string;
     title: string;

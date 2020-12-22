@@ -56,8 +56,6 @@ const httpTrigger: AzureFunction = withAuth<CreatePostRequest>(null, async (cont
                 username: users[0].username,
                 profileSrc: users[0].profileSrc,
             },
-            hobbyName: hobbies[0].name,
-            hobbySlug: hobbies[0].slug,
             token: newPost.token,
             slug: newPost.slug,
             title: newPost.title,

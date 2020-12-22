@@ -70,7 +70,7 @@ const httpTrigger: AzureFunction = withAuth(
                 const hobby = hobbyQuery.resources.filter((h) => h.id === p.hobbyId)[0];
 
                 return {
-                    slug: hobby.slug,
+                    hobbySlug: hobby.slug,
                     hobbyName: hobby.name,
                     token: p.token,
                     title: p.title,
@@ -132,7 +132,7 @@ const httpTrigger: AzureFunction = withAuth(
                 const hobby = hobbyQuery.resources.filter((h) => h.id === p.hobbyId)[0];
 
                 return {
-                    slug: hobby.slug,
+                    hobbySlug: hobby.slug,
                     hobbyName: hobby.name,
                     token: p.token,
                     title: p.title,
