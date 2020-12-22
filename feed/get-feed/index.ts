@@ -1,5 +1,5 @@
 import { AzureFunction, Context } from '@azure/functions';
-import { FeedEntry, PaginatedResult, PostCosmosResult, UserProfileCosmosResult } from '../types';
+import { FeedEntry, HobbyCosmosResult, PaginatedResult, PostCosmosResult, UserProfileCosmosResult } from '../types';
 import { cosmos } from '../utils';
 import { withAuth } from '../utils/authUtils';
 
@@ -10,6 +10,7 @@ const httpTrigger: AzureFunction = withAuth(
 
         const postsContainer = await cosmos.getPostsContainer();
         const userContainer = await cosmos.getUsersContainer();
+        const hobbyContainer = await cosmos.getHobbiesContainer();
 
         if (token) {
             const usersContainer = await cosmos.getUsersContainer();
@@ -45,23 +46,39 @@ const httpTrigger: AzureFunction = withAuth(
             }
 
             const userIds = new Set<string>();
-            postQuery.resources.forEach((res) => userIds.add(res.userId));
+            const hobbyIds = new Set<string>();
+            postQuery.resources.forEach((res) => {
+                userIds.add(res.userId);
+                hobbyIds.add(res.hobbyId);
+            });
 
             const usersQuery = await userContainer.items
                 .query<Partial<UserProfileCosmosResult>>(
                     {
-                        query: 'SELECT * FROM c WHERE ARRAY_CONTAINS(@userIds, c["userId"])',
+                        query:
+                            'SELECT c["userId"], c["username"], c["profileSrc"] FROM c WHERE ARRAY_CONTAINS(@userIds, c["userId"])',
                         parameters: [{ name: '@userIds', value: Array.from(userIds) }],
                     },
                     { partitionKey: 'userId' }
                 )
                 .fetchAll();
 
+            const hobbyQuery = await hobbyContainer.items
+                .query<Partial<HobbyCosmosResult>>(
+                    {
+                        query: 'SELECT c["slug"] FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
+                        parameters: [{ name: '@hobbyIds', value: Array.from(hobbyIds) }],
+                    },
+                    { partitionKey: 'id' }
+                )
+                .fetchAll();
+
             const posts: FeedEntry[] = postQuery.resources.map<FeedEntry>((p) => {
                 const profile = usersQuery.resources.filter((u) => u.userId === p.userId)[0];
+                const hobby = hobbyQuery.resources.filter((h) => h.id === p.hobbyId)[0];
 
                 return {
-                    slug: p.slug,
+                    slug: hobby.slug,
                     token: p.token,
                     title: p.title,
                     type: p.type,
