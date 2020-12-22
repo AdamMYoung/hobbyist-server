@@ -25,6 +25,7 @@ const unfollowHobby: AzureFunction = withAuth(null, async (context: Context, _, 
             status: 404,
             body: `User not found. User UID: ${token.sub}`,
         };
+        return;
     }
 
     const { resources: hobbies } = await hobbyContainer.items
@@ -43,6 +44,7 @@ const unfollowHobby: AzureFunction = withAuth(null, async (context: Context, _, 
             status: 404,
             body: `Hobby not found. Hobby slug: ${hobbySlug}`,
         };
+        return;
     }
 
     if (user.following.includes(hobby.id)) {
