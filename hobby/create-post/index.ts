@@ -1,6 +1,6 @@
 import { AzureFunction, Context } from '@azure/functions';
 import { cosmos } from '../utils';
-import { CreatePostRequest, HobbyCosmosResult, Post, PostCosmosResult } from '../types';
+import { CreatePostRequest, HobbyCosmosResult, Post, PostCosmosResult, UserProfileCosmosResult } from '../types';
 import { withAuth } from '../utils/authUtils';
 import { paramCase } from 'param-case';
 import { getId } from '../utils/stringUtils';
@@ -10,23 +10,34 @@ const httpTrigger: AzureFunction = withAuth<CreatePostRequest>(null, async (cont
 
     const hobbyContainer = await cosmos.getHobbiesContainer();
     const postsContainer = await cosmos.getPostsContainer();
+    const usersContainer = await cosmos.getUsersContainer();
 
-    const hobbyQuery = await hobbyContainer.items
+    const { resources: hobbies } = await hobbyContainer.items
         .query<Partial<HobbyCosmosResult>>({
-            query: 'SELECT TOP 1 c["id"] FROM c WHERE c["slug"] = @hobbySlug',
+            query: 'SELECT TOP 1 c["id"], c["name"] FROM c WHERE c["slug"] = @hobbySlug',
             parameters: [{ name: '@hobbySlug', value: slug }],
         })
         .fetchAll();
 
-    const fetchedHobby = hobbyQuery.resources[0];
-
-    if (!fetchedHobby) {
+    if (!hobbies[0]) {
         context.res = { status: 404 };
         return;
     }
 
+    const { resources: users } = await usersContainer.items
+        .query<Partial<UserProfileCosmosResult>>({
+            query: 'SELECT TOP 1 c["userId"], c["username"], c["profileSrc"] FROM c WHERE c["userId"] = @userId',
+            parameters: [{ name: '@userId', value: token.sub }],
+        })
+        .fetchAll();
+
+    if (!users[0]) {
+        context.res = { status: 404, body: `User not found. User UID: ${posts[0].userId}` };
+        return;
+    }
+
     const newPost: Partial<PostCosmosResult> = {
-        hobbyId: fetchedHobby?.id,
+        hobbyId: hobbies[0]?.id,
         userId: token.sub,
         token: getId(6),
         slug: paramCase(body.title),
@@ -41,7 +52,12 @@ const httpTrigger: AzureFunction = withAuth<CreatePostRequest>(null, async (cont
     context.res = {
         status: 201,
         body: {
-            hobbyId: newPost.hobbyId,
+            profile: {
+                username: users[0].username,
+                profileSrc: users[0].profileSrc,
+            },
+            hobbyName: hobbies[0].name,
+            hobbySlug: hobbies[0].slug,
             token: newPost.token,
             slug: newPost.slug,
             title: newPost.title,
