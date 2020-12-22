@@ -32,7 +32,7 @@ const httpTrigger: AzureFunction = withAuth<CreatePostRequest>(null, async (cont
         .fetchAll();
 
     if (!users[0]) {
-        context.res = { status: 404, body: `User not found. User UID: ${posts[0].userId}` };
+        context.res = { status: 404, body: `User not found. User UID: ${token.sub}` };
         return;
     }
 
