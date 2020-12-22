@@ -30,7 +30,7 @@ const httpTrigger: AzureFunction = withAuth(
             const postQuery = await postsContainer.items
                 .query<PostCosmosResult>(
                     {
-                        query: `SELECT * FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["hobbyId"]) ORDER BY c["creationDate"] DESC`,
+                        query: `SELECT * FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["hobbyId"]) ORDER BY c["_ts"] DESC`,
                         parameters: [{ name: '@hobbyIds', value: users[0].following }],
                     },
                     { maxItemCount: 20, continuationToken }
