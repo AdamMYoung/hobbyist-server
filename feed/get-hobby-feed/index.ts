@@ -28,7 +28,7 @@ const httpTrigger: AzureFunction = withAuth(
         const postQuery = await postsContainer.items
             .query<PostCosmosResult>(
                 {
-                    query: `SELECT * FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"]) ORDER BY c["creationDate"] DESC`,
+                    query: `SELECT * FROM c WHERE c["id] = @hobbyId ORDER BY c["creationDate"] DESC`,
                     parameters: [{ name: '@hobbyId', value: hobbies[0].id }],
                 },
                 { maxItemCount: 20, continuationToken }
@@ -56,20 +56,12 @@ const httpTrigger: AzureFunction = withAuth(
             })
             .fetchAll();
 
-        const hobbyQuery = await hobbyContainer.items
-            .query<Partial<HobbyCosmosResult>>({
-                query: 'SELECT c["slug"] FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
-                parameters: [{ name: '@hobbyIds', value: Array.from(hobbyIds) }],
-            })
-            .fetchAll();
-
         const posts: FeedEntry[] = postQuery.resources.map<FeedEntry>((p) => {
             const profile = usersQuery.resources.filter((u) => u.userId === p.userId)[0];
-            const hobby = hobbyQuery.resources.filter((h) => h.id === p.hobbyId)[0];
 
             return {
-                hobbySlug: hobby?.slug,
-                hobbyName: hobby?.name,
+                hobbySlug: hobbies[0]?.slug,
+                hobbyName: hobbies[0]?.name,
                 token: p.token,
                 title: p.title,
                 type: p.type,
