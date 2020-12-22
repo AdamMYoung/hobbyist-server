@@ -53,7 +53,8 @@ const httpTrigger: AzureFunction = withAuth(
                 hobbyIds.add(res.hobbyId);
             });
 
-            context.log('Posts', postQuery.resources);
+            context.log('Hobbies', Array.from(hobbyIds));
+            context.log('Users', Array.from(userIds));
 
             const usersQuery = await userContainer.items
                 .query<Partial<UserProfileCosmosResult>>(
@@ -75,9 +76,6 @@ const httpTrigger: AzureFunction = withAuth(
                     { partitionKey: 'id' }
                 )
                 .fetchAll();
-
-            context.log('Hobbies', hobbyQuery.resources);
-            context.log('Users', usersQuery.resources);
 
             const posts: FeedEntry[] = postQuery.resources.map<FeedEntry>((p) => {
                 const profile = usersQuery.resources.filter((u) => u.userId === p.userId)[0];
@@ -118,8 +116,6 @@ const httpTrigger: AzureFunction = withAuth(
                 return;
             }
 
-            context.log('Posts', postQuery.resources);
-
             const userIds = new Set<string>();
             const hobbyIds = new Set<string>();
 
@@ -127,6 +123,9 @@ const httpTrigger: AzureFunction = withAuth(
                 userIds.add(res.userId);
                 hobbyIds.add(res.hobbyId);
             });
+
+            context.log('Hobbies', Array.from(hobbyIds));
+            context.log('Users', Array.from(userIds));
 
             const usersQuery = await userContainer.items
                 .query<Partial<UserProfileCosmosResult>>(
@@ -148,9 +147,6 @@ const httpTrigger: AzureFunction = withAuth(
                     { partitionKey: 'id' }
                 )
                 .fetchAll();
-
-            context.log('Hobbies', hobbyQuery.resources);
-            context.log('Users', usersQuery.resources);
 
             const posts: FeedEntry[] = postQuery.resources.map<FeedEntry>((p) => {
                 const profile = usersQuery.resources.filter((u) => u.userId === p.userId)[0];
