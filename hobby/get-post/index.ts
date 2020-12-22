@@ -13,13 +13,10 @@ const httpTrigger: AzureFunction = withAuth(
         const hobbyContainer = await cosmos.getHobbiesContainer();
 
         const { resources: hobbies } = await hobbyContainer.items
-            .query<Partial<HobbyCosmosResult>>(
-                {
-                    query: 'SELECT TOP 1 c["id"] FROM c WHERE c["slug"] = @hobbySlug',
-                    parameters: [{ name: '@hobbySlug', value: hobbySlug }],
-                },
-                { partitionKey: 'slug' }
-            )
+            .query<Partial<HobbyCosmosResult>>({
+                query: 'SELECT TOP 1 c["id"] FROM c WHERE c["slug"] = @hobbySlug',
+                parameters: [{ name: '@hobbySlug', value: hobbySlug }],
+            })
             .fetchAll();
 
         if (!hobbies[0]) {
@@ -28,16 +25,13 @@ const httpTrigger: AzureFunction = withAuth(
         }
 
         const { resources: posts } = await postContainer.items
-            .query<Partial<PostCosmosResult>>(
-                {
-                    query: 'SELECT TOP 1 * FROM c WHERE c["hobbyId"] = @hobbyId AND c["token"] = @postToken',
-                    parameters: [
-                        { name: '@hobbyId', value: hobbies[0].id },
-                        { name: '@postToken', value: postToken },
-                    ],
-                },
-                { partitionKey: 'token' }
-            )
+            .query<Partial<PostCosmosResult>>({
+                query: 'SELECT TOP 1 * FROM c WHERE c["hobbyId"] = @hobbyId AND c["token"] = @postToken',
+                parameters: [
+                    { name: '@hobbyId', value: hobbies[0].id },
+                    { name: '@postToken', value: postToken },
+                ],
+            })
             .fetchAll();
 
         if (!posts[0]) {

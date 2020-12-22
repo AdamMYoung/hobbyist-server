@@ -10,13 +10,10 @@ const getUserHobbies: AzureFunction = withAuth(null, async (context: Context, _,
     const hobbyContainer = await cosmos.getHobbiesContainer();
 
     const { resources: users } = await userContainer.items
-        .query<{ following: string[] }>(
-            {
-                query: `SELECT TOP 1 c["following"] FROM c WHERE c["username"] = @username`,
-                parameters: [{ name: '@username', value: username }],
-            },
-            { partitionKey: 'username' }
-        )
+        .query<{ following: string[] }>({
+            query: `SELECT TOP 1 c["following"] FROM c WHERE c["username"] = @username`,
+            parameters: [{ name: '@username', value: username }],
+        })
         .fetchAll();
 
     const followingHobbyIds = users[0]?.following;
@@ -27,14 +24,11 @@ const getUserHobbies: AzureFunction = withAuth(null, async (context: Context, _,
     }
 
     const { resources: hobbies } = await hobbyContainer.items
-        .query<Partial<HobbyCosmosResult> & { isFollowing: boolean }>(
-            {
-                query:
-                    'SELECT c["slug"], c["name"], c["description"], c["profileSrc"], c["bannerSrc"], ARRAY_CONTAINS(c["followers"], @userId) AS isFollowing FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
-                parameters: [{ name: '@hobbyIds', value: followingHobbyIds }],
-            },
-            { partitionKey: 'id' }
-        )
+        .query<Partial<HobbyCosmosResult> & { isFollowing: boolean }>({
+            query:
+                'SELECT c["slug"], c["name"], c["description"], c["profileSrc"], c["bannerSrc"], ARRAY_CONTAINS(c["followers"], @userId) AS isFollowing FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
+            parameters: [{ name: '@hobbyIds', value: followingHobbyIds }],
+        })
         .fetchAll();
 
     const parsedHobbies = hobbies.map(

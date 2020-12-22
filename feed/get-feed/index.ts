@@ -16,13 +16,10 @@ const httpTrigger: AzureFunction = withAuth(
             const usersContainer = await cosmos.getUsersContainer();
 
             const { resources: users } = await usersContainer.items
-                .query<Partial<UserProfileCosmosResult>>(
-                    {
-                        query: `SELECT TOP 1 c["following"] FROM c WHERE c["userId"] = @userId`,
-                        parameters: [{ name: '@userId', value: token.sub }],
-                    },
-                    { partitionKey: 'userId' }
-                )
+                .query<Partial<UserProfileCosmosResult>>({
+                    query: `SELECT TOP 1 c["following"] FROM c WHERE c["userId"] = @userId`,
+                    parameters: [{ name: '@userId', value: token.sub }],
+                })
                 .fetchAll();
 
             if (!users[0]) {
@@ -36,7 +33,7 @@ const httpTrigger: AzureFunction = withAuth(
                         query: `SELECT * FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["hobbyId"]) ORDER BY c["creationDate"] DESC`,
                         parameters: [{ name: '@hobbyIds', value: users[0].following }],
                     },
-                    { maxItemCount: 20, continuationToken, partitionKey: 'hobbyId' }
+                    { maxItemCount: 20, continuationToken }
                 )
                 .fetchNext();
 
@@ -57,24 +54,18 @@ const httpTrigger: AzureFunction = withAuth(
             context.log('Users', Array.from(userIds));
 
             const usersQuery = await userContainer.items
-                .query<Partial<UserProfileCosmosResult>>(
-                    {
-                        query:
-                            'SELECT c["userId"], c["username"], c["profileSrc"] FROM c WHERE ARRAY_CONTAINS(@userIds, c["userId"])',
-                        parameters: [{ name: '@userIds', value: Array.from(userIds) }],
-                    },
-                    { partitionKey: 'userId' }
-                )
+                .query<Partial<UserProfileCosmosResult>>({
+                    query:
+                        'SELECT c["userId"], c["username"], c["profileSrc"] FROM c WHERE ARRAY_CONTAINS(@userIds, c["userId"])',
+                    parameters: [{ name: '@userIds', value: Array.from(userIds) }],
+                })
                 .fetchAll();
 
             const hobbyQuery = await hobbyContainer.items
-                .query<Partial<HobbyCosmosResult>>(
-                    {
-                        query: 'SELECT c["slug"], c["name"] FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
-                        parameters: [{ name: '@hobbyIds', value: Array.from(hobbyIds) }],
-                    },
-                    { partitionKey: 'id' }
-                )
+                .query<Partial<HobbyCosmosResult>>({
+                    query: 'SELECT c["slug"], c["name"] FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
+                    parameters: [{ name: '@hobbyIds', value: Array.from(hobbyIds) }],
+                })
                 .fetchAll();
 
             const posts: FeedEntry[] = postQuery.resources.map<FeedEntry>((p) => {
@@ -128,24 +119,18 @@ const httpTrigger: AzureFunction = withAuth(
             context.log('Users', Array.from(userIds));
 
             const usersQuery = await userContainer.items
-                .query<Partial<UserProfileCosmosResult>>(
-                    {
-                        query:
-                            'SELECT c["userId"], c["username"], c["profileSrc"] FROM c WHERE ARRAY_CONTAINS(@userIds, c["userId"])',
-                        parameters: [{ name: '@userIds', value: Array.from(userIds) }],
-                    },
-                    { partitionKey: 'userId' }
-                )
+                .query<Partial<UserProfileCosmosResult>>({
+                    query:
+                        'SELECT c["userId"], c["username"], c["profileSrc"] FROM c WHERE ARRAY_CONTAINS(@userIds, c["userId"])',
+                    parameters: [{ name: '@userIds', value: Array.from(userIds) }],
+                })
                 .fetchAll();
 
             const hobbyQuery = await hobbyContainer.items
-                .query<Partial<HobbyCosmosResult>>(
-                    {
-                        query: 'SELECT c["slug"], c["name"] FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
-                        parameters: [{ name: '@hobbyIds', value: Array.from(hobbyIds) }],
-                    },
-                    { partitionKey: 'id' }
-                )
+                .query<Partial<HobbyCosmosResult>>({
+                    query: 'SELECT c["slug"], c["name"] FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
+                    parameters: [{ name: '@hobbyIds', value: Array.from(hobbyIds) }],
+                })
                 .fetchAll();
 
             const posts: FeedEntry[] = postQuery.resources.map<FeedEntry>((p) => {
