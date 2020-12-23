@@ -1,31 +1,19 @@
-export type FeedEntry = {
-    hobbyProfileSrc: string;
-    hobbySlug: string;
-    hobbyName: string;
-    token: string;
-    title: string;
-    content: any;
-    type: 'text' | 'image';
-    creationDate: Date;
-    profile: Profile;
-};
-
-export type Hobby = {
-    profileSrc: string;
-    slug: string;
-    name: string;
-};
-
 export type Profile = {
     profileSrc: string;
     username: string;
 };
 
-export type ProfileDetail = {
-    bannerSrc?: string;
+export type Comment = {
+    rootUid: string;
+    uid: string;
+    profile: Profile;
+    content: any;
+    creationDate: Date;
+    replies: Comment[];
 };
 
 //Generic
+
 export type AccessToken = {
     iss: string;
     sub: string;
@@ -77,7 +65,22 @@ export type PostCosmosResult = CosmosResult & {
     token: string;
     slug: string;
     title: string;
-    content: string;
+    content: any;
     type: 'text' | 'image';
     creationDate: Date;
 };
+
+export type CommentEntry = {
+    rootUid: string; //Root element of the reply chain, to reduce search space.
+    commentUid: string; // Unique ID of the reply.
+    userUid: string;
+    content: any;
+    creationDate: Date;
+    replies: CommentEntry[];
+};
+
+export type CommentCosmosResult = CosmosResult &
+    CommentEntry & {
+        hobbySlug: string;
+        hobbyToken: string;
+    };
