@@ -1,17 +1,37 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions"
+import { AzureFunction, Context } from '@azure/functions';
+import { Hobby, HobbyCosmosResult, ProfileDetail, UserProfileCosmosResult } from '../types';
+import { cosmos } from '../utils';
+import { withAuth } from '../utils/authUtils';
 
-const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    context.log('HTTP trigger function processed a request.');
-    const name = (req.query.name || (req.body && req.body.name));
-    const responseMessage = name
-        ? "Hello, " + name + ". This HTTP triggered function executed successfully."
-        : "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.";
+const getUser: AzureFunction = withAuth(null, async (context: Context, _, token) => {
+    const username = context.req.query.username;
+
+    const userContainer = await cosmos.getUsersContainer();
+
+    const { resources: users } = await userContainer.items
+        .query<UserProfileCosmosResult>({
+            query: `SELECT TOP 1 * FROM c WHERE c["username"] = @username`,
+            parameters: [{ name: '@username', value: username }],
+        })
+        .fetchAll();
+
+    if (!users[0]) {
+        context.res = {
+            status: 404,
+            body: `User not found. Username: ${username}`,
+        };
+        return;
+    }
 
     context.res = {
-        // status: 200, /* Defaults to 200 */
-        body: responseMessage
+        status: 200,
+        body: {
+            profileSrc: users[0].profileSrc,
+            bannerSrc: users[0].bannerSrc,
+            username: users[0].username,
+            description: users[0].description,
+        } as ProfileDetail,
     };
+});
 
-};
-
-export default httpTrigger;
+export default getUser;

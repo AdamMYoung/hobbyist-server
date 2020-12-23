@@ -20,6 +20,16 @@ export type Hobby = {
     following?: boolean;
 };
 
+export type Profile = {
+    profileSrc: string;
+    username: string;
+};
+
+export type ProfileDetail = Profile & {
+    description?: string;
+    bannerSrc?: string;
+};
+
 //Generic
 
 export type AccessToken = {
@@ -57,5 +67,6 @@ export type UserProfileCosmosResult = CosmosResult & {
     profileSrc: string;
     username: string;
     bannerSrc?: string;
+    description?: string;
     following: string[];
 };
