@@ -60,7 +60,8 @@ const httpTrigger: AzureFunction = withAuth(
 
             const hobbyQuery = await hobbyContainer.items
                 .query<Partial<HobbyCosmosResult>>({
-                    query: 'SELECT c["id"], c["slug"], c["name"] FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
+                    query:
+                        'SELECT c["id"], c["slug"], c["name"], c["profileSrc"] FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
                     parameters: [{ name: '@hobbyIds', value: Array.from(hobbyIds) }],
                 })
                 .fetchAll();
@@ -123,7 +124,8 @@ const httpTrigger: AzureFunction = withAuth(
 
             const hobbyQuery = await hobbyContainer.items
                 .query<Partial<HobbyCosmosResult>>({
-                    query: 'SELECT c["id"], c["slug"], c["name"] FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
+                    query:
+                        'SELECT c["id"], c["slug"], c["name"], c["profileSrc"] FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
                     parameters: [{ name: '@hobbyIds', value: Array.from(hobbyIds) }],
                 })
                 .fetchAll();
