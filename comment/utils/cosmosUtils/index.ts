@@ -40,3 +40,12 @@ export const getPostsContainer = async () => {
     );
     return container;
 };
+
+export const getCommentsContainer = async () => {
+    const db = await getDatabase();
+    const { container } = await db.containers.createIfNotExists(
+        { id: 'comments', partitionKey: '/uid' },
+        { offerThroughput: 400 }
+    );
+    return container;
+};

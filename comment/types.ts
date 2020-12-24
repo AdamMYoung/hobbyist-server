@@ -4,8 +4,8 @@ export type Profile = {
 };
 
 export type Comment = {
-    rootUid: string;
     uid: string;
+    rootUid: string;
     profile: Profile;
     content: any;
     creationDate: Date;
@@ -71,8 +71,8 @@ export type PostCosmosResult = CosmosResult & {
 };
 
 export type CommentEntry = {
+    uid: string; // Unique ID of the reply.
     rootUid: string; //Root element of the reply chain, to reduce search space.
-    commentUid: string; // Unique ID of the reply.
     userUid: string;
     content: any;
     creationDate: Date;
@@ -82,5 +82,5 @@ export type CommentEntry = {
 export type CommentCosmosResult = CosmosResult &
     CommentEntry & {
         hobbySlug: string;
-        hobbyToken: string;
+        postToken: string;
     };
