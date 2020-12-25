@@ -15,7 +15,7 @@ const httpTrigger: AzureFunction = withAuth(
             .query<Partial<CommentCosmosResult>>(
                 {
                     query:
-                        'SELECT * FROM c WHERE c["hobbySlug"] = @hobbySlug AND c["postToken"] = @postToken ORDER BY c["_ts"]',
+                        'SELECT * FROM c WHERE c["hobbySlug"] = @hobbySlug AND c["postToken"] = @postToken ORDER BY c["_ts"] DESC',
                     parameters: [
                         { name: '@hobbySlug', value: hobbySlug },
                         { name: '@postToken', value: postToken },
