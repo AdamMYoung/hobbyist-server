@@ -27,7 +27,7 @@ const httpTrigger: AzureFunction = withAuth(
 
         const comments = commentQuery.resources;
 
-        if (!comments[0]) {
+        if (!comments || !comments[0]) {
             context.res = { body: [] };
             return;
         }
