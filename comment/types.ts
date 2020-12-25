@@ -1,3 +1,9 @@
+export type CreateCommentRequest = {
+    content: Node[];
+    parentUid?: string;
+    rootUid?: string;
+};
+
 export type Profile = {
     profileSrc: string;
     username: string;
@@ -76,7 +82,7 @@ export type CommentEntry = {
     userUid: string;
     content: any;
     creationDate: Date;
-    replies: CommentEntry[];
+    replies?: CommentEntry[];
 };
 
 export type CommentCosmosResult = CosmosResult &
