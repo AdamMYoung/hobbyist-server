@@ -3,7 +3,7 @@ import { Hobby, HobbyCosmosResult } from '../types';
 import { cosmos } from '../utils';
 import { withAuth } from '../utils/authUtils';
 
-const getUserHobbies: AzureFunction = withAuth(null, async (context: Context, _, token) => {
+const getUserHobbies: AzureFunction = withAuth({ isTokenRequired: false }, async (context: Context, _, token) => {
     const username = context.req.query.username;
 
     const userContainer = await cosmos.getUsersContainer();
