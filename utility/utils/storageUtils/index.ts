@@ -29,5 +29,5 @@ export const uploadImage = async (upload: ImageUpload, context: Context): Promis
     }
 
     await blockBlobClient.uploadData(minifiedImage);
-    return `https://${process.env.BLOB_STORAGE_ACCOUNT}.blob.core.windows.net/${upload.storageLocation}/${blobName}`;
+    return `https://${process.env.BLOB_STORAGE_ACCOUNT}/${upload.storageLocation}/${blobName}`;
 };
