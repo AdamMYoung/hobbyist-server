@@ -42,7 +42,8 @@ const httpTrigger: AzureFunction = withAuth(
 
         const { resources: users } = await usersContainer.items
             .query<Partial<UserProfileCosmosResult>>({
-                query: 'SELECT TOP 1 c["userId"], c["username"], c["profileSrc"] FROM c WHERE c["userId"] = @userId',
+                query:
+                    'SELECT TOP 1 c["userId"], c["username"], c["profileSrc"], c["description"] FROM c WHERE c["userId"] = @userId',
                 parameters: [{ name: '@userId', value: posts[0].userId }],
             })
             .fetchAll();
@@ -56,6 +57,7 @@ const httpTrigger: AzureFunction = withAuth(
             profile: {
                 username: users[0].username,
                 profileSrc: users[0].profileSrc,
+                description: users[0].description,
             },
             token: posts[0].token,
             slug: posts[0].slug,

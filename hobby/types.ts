@@ -15,6 +15,7 @@ export type CreatePostRequest = {
 export type Profile = {
     profileSrc: string;
     username: string;
+    description?: string;
 };
 
 //Generic
@@ -74,6 +75,7 @@ export type HobbyCosmosResult = CosmosResult & {
 
 export type UserProfileCosmosResult = CosmosResult & {
     userId: string;
+    description?: string;
     emailAddress: string;
     profileSrc: string;
     username: string;
