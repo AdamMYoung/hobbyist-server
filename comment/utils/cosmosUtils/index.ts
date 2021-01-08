@@ -16,36 +16,24 @@ const getDatabase = async () => {
 
 export const getUsersContainer = async () => {
     const db = await getDatabase();
-    const { container } = await db.containers.createIfNotExists(
-        { id: 'users', partitionKey: '/userId' },
-        { offerThroughput: 400 }
-    );
+    const { container } = await db.containers.createIfNotExists({ id: 'users', partitionKey: '/userId' });
     return container;
 };
 
 export const getHobbiesContainer = async () => {
     const db = await getDatabase();
-    const { container } = await db.containers.createIfNotExists(
-        { id: 'hobbies', partitionKey: '/slug' },
-        { offerThroughput: 400 }
-    );
+    const { container } = await db.containers.createIfNotExists({ id: 'hobbies', partitionKey: '/slug' });
     return container;
 };
 
 export const getPostsContainer = async () => {
     const db = await getDatabase();
-    const { container } = await db.containers.createIfNotExists(
-        { id: 'posts', partitionKey: '/id' },
-        { offerThroughput: 400 }
-    );
+    const { container } = await db.containers.createIfNotExists({ id: 'posts', partitionKey: '/id' });
     return container;
 };
 
 export const getCommentsContainer = async () => {
     const db = await getDatabase();
-    const { container } = await db.containers.createIfNotExists(
-        { id: 'comments', partitionKey: '/uid' },
-        { offerThroughput: 400 }
-    );
+    const { container } = await db.containers.createIfNotExists({ id: 'comments', partitionKey: '/uid' });
     return container;
 };
