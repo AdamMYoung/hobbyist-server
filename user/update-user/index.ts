@@ -5,7 +5,7 @@ import { withAuth } from '../utils/authUtils';
 import { uploadImage } from '../utils/imageUtils';
 
 const httpTrigger: AzureFunction = withAuth<UserProfileUpdateRequest>(
-    { scopes: ['update:user_profile'] },
+    {},
     async (context: Context, body, token): Promise<void> => {
         const userContainer = await cosmos.getUsersContainer();
         const userEntry = await userContainer.items
@@ -15,7 +15,12 @@ const httpTrigger: AzureFunction = withAuth<UserProfileUpdateRequest>(
             })
             .fetchAll();
 
-        const updatedUserEntry = { ...userEntry.resources[0] };
+        if (userEntry.resources.length === 0) {
+            context.res = { status: 404, body: `User not found. User ID: ${token.sub}` };
+        }
+
+        const currentUser = userEntry.resources[0];
+        const updatedUserEntry = { ...currentUser };
 
         if (body.username) {
             updatedUserEntry['username'] = body.username;
