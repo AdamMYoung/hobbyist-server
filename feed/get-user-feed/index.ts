@@ -15,7 +15,8 @@ const httpTrigger: AzureFunction = withAuth(
 
         const usersQuery = await userContainer.items
             .query<Partial<UserProfileCosmosResult>>({
-                query: 'SELECT TOP 1 c["userId"], c["username"], c["profileSrc"]FROM c WHERE c["username"] = @username',
+                query:
+                    'SELECT TOP 1 c["userId"], c["username"], c["profileSrc"] FROM c WHERE c["username"] = @username',
                 parameters: [{ name: '@username', value: username }],
             })
             .fetchAll();
