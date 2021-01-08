@@ -15,8 +15,7 @@ const httpTrigger: AzureFunction = withAuth(
 
         const usersQuery = await userContainer.items
             .query<Partial<UserProfileCosmosResult>>({
-                query:
-                    'SELECT TOP 1 c["userId"], c["username"], c["profileSrc"], c["following"] FROM c WHERE c["username"] = @username',
+                query: 'SELECT TOP 1 c["userId"], c["username"], c["profileSrc"]FROM c WHERE c["username"] = @username',
                 parameters: [{ name: '@username', value: username }],
             })
             .fetchAll();
@@ -25,25 +24,11 @@ const httpTrigger: AzureFunction = withAuth(
             context.res = { status: 404, body: `User not found for username: ${username}` };
             return;
         }
-
-        const hobbyQuery = await hobbyContainer.items
-            .query<Partial<HobbyCosmosResult>>({
-                query:
-                    'SELECT c["id"], c["slug"], c["name"], c["profileSrc"] FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
-                parameters: [{ name: '@hobbyIds', value: usersQuery.resources[0].following }],
-            })
-            .fetchAll();
-
-        if (hobbyQuery.resources.length === 0) {
-            context.res = { status: 404, body: `No hobbies found for user: ${username}` };
-            return;
-        }
-
         const postQuery = await postsContainer.items
             .query<PostCosmosResult>(
                 {
-                    query: `SELECT * FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["hobbyId"]) ORDER BY c["_ts"] DESC`,
-                    parameters: [{ name: '@hobbyIds', value: usersQuery.resources[0].following }],
+                    query: `SELECT * FROM c WHERE c["userId"] = @userId ORDER BY c["_ts"] DESC`,
+                    parameters: [{ name: '@userId', value: usersQuery.resources[0].userId }],
                 },
                 { maxItemCount: 20, continuationToken }
             )
@@ -54,14 +39,26 @@ const httpTrigger: AzureFunction = withAuth(
             return;
         }
 
+        const postHobbyIds = new Set<string>();
+
+        postQuery.resources.forEach((post) => postHobbyIds.add(post.hobbyId));
+
+        const hobbyQuery = await hobbyContainer.items
+            .query<Partial<HobbyCosmosResult>>({
+                query:
+                    'SELECT c["id"], c["slug"], c["name"], c["profileSrc"] FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["id"])',
+                parameters: [{ name: '@hobbyIds', value: Array.from(postHobbyIds) }],
+            })
+            .fetchAll();
+
         const posts: FeedEntry[] = postQuery.resources.map<FeedEntry>((p) => {
             const profile = usersQuery.resources[0];
             const hobby = hobbyQuery.resources.filter((h) => h.id === p.hobbyId)[0];
 
             return {
-                hobbyProfileSrc: hobby?.profileSrc,
-                hobbySlug: hobby?.slug,
-                hobbyName: hobby?.name,
+                hobbyProfileSrc: hobby?.profileSrc ?? '',
+                hobbySlug: hobby?.slug ?? '',
+                hobbyName: hobby?.name ?? '',
                 token: p.token,
                 title: p.title,
                 type: p.type,
