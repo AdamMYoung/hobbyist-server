@@ -7,6 +7,7 @@ export type Auth0UserProfile = {
 
 export type UserProfileUpdateRequest = {
     username?: string;
+    description?: string;
     profileImgBase64?: string;
     bannerImgBase64?: string;
 };

@@ -26,6 +26,10 @@ const httpTrigger: AzureFunction = withAuth<UserProfileUpdateRequest>(
             updatedUserEntry['username'] = body.username;
         }
 
+        if (body.description) {
+            updatedUserEntry['description'] = body.description;
+        }
+
         if (body.profileImgBase64) {
             updatedUserEntry['profileSrc'] = await uploadImage({
                 base64Image: body.profileImgBase64,
