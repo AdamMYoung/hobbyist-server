@@ -21,8 +21,9 @@ const httpTrigger: AzureFunction = withAuth(
             })
             .fetchAll();
 
-        if (usersQuery.resources.length === 0) {
+        if (usersQuery.resources?.length === 0) {
             context.res = { status: 404, body: `User not found for username: ${username}` };
+            return;
         }
 
         const hobbyQuery = await hobbyContainer.items
@@ -41,8 +42,8 @@ const httpTrigger: AzureFunction = withAuth(
         const postQuery = await postsContainer.items
             .query<PostCosmosResult>(
                 {
-                    query: `SELECT * FROM c WHERE c["hobbyId"] = @hobbyId ORDER BY c["_ts"] DESC`,
-                    parameters: [{ name: '@hobbyId', value: usersQuery.resources[0].following }],
+                    query: `SELECT * FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["hobbyId"]) ORDER BY c["_ts"] DESC`,
+                    parameters: [{ name: '@hobbyIds', value: usersQuery.resources[0].following }],
                 },
                 { maxItemCount: 20, continuationToken }
             )
