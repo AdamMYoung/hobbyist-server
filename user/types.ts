@@ -30,6 +30,10 @@ export type ProfileDetail = Profile & {
     bannerSrc?: string;
 };
 
+export type CurrentProfileDetail = ProfileDetail & {
+    emailAddress: string;
+};
+
 //Generic
 
 export type AccessToken = {
