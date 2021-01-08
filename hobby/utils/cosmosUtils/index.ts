@@ -10,7 +10,7 @@ const client = new CosmosClient({
 });
 
 const getDatabase = async () => {
-    const { database } = await client.databases.createIfNotExists({ id: 'hobbyist-db' });
+    const { database } = await client.databases.createIfNotExists({ id: 'hobbyist-db' }, { offerThroughput: 400 });
     return database;
 };
 
