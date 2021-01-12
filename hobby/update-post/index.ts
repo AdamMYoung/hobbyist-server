@@ -60,7 +60,7 @@ const httpTrigger: AzureFunction = withAuth<UpdatePostRequest>(null, async (cont
         return;
     }
 
-    const post = existingPost.resource[0];
+    const post = existingPost.resource;
 
     context.res = {
         status: 200,
