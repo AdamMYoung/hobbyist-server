@@ -4,7 +4,8 @@ import { HobbyCosmosResult, Post, PostCosmosResult, UpdatePostRequest, UserProfi
 import { withAuth } from '../utils/authUtils';
 
 const httpTrigger: AzureFunction = withAuth<UpdatePostRequest>(null, async (context: Context, body, token) => {
-    const { slug, postToken } = context.req.query;
+    const postToken = context.req.query.postToken;
+    const slug = context.req.query.slug;
 
     const hobbyContainer = await cosmos.getHobbiesContainer();
     const postsContainer = await cosmos.getPostsContainer();
