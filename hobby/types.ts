@@ -12,6 +12,15 @@ export type CreatePostRequest = {
     content: string;
 };
 
+export type UpdatePostRequest = {
+    content: Node[];
+};
+
+export type UpdateCommentRequest = {
+    content: Node[];
+    rootUid: string;
+};
+
 export type Profile = {
     profileSrc: string;
     username: string;
@@ -89,7 +98,7 @@ export type PostCosmosResult = CosmosResult & {
     token: string;
     slug: string;
     title: string;
-    content: string;
+    content: any;
     type: 'text' | 'image';
     creationDate: Date;
 };
