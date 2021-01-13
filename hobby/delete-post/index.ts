@@ -42,11 +42,9 @@ const httpTrigger: AzureFunction = withAuth(null, async (context: Context, _, to
         return;
     }
 
-    await postsContainer.item(posts[0].id).delete();
+    await postsContainer.item(posts[0].id, posts[0].id).delete();
 
-    context.res = {
-        status: 200,
-    };
+    context.res = { status: 200 };
 });
 
 export default httpTrigger;
