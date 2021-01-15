@@ -16,10 +16,7 @@ const getUser: AzureFunction = withAuth({ isTokenRequired: false }, async (conte
         .fetchAll();
 
     if (!users[0]) {
-        context.res = {
-            status: 404,
-            body: `User not found. Username: ${username}`,
-        };
+        context.res = { status: 404, body: `User not found. Username: ${username}` };
         return;
     }
 

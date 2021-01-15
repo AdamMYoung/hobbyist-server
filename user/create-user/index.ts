@@ -8,6 +8,18 @@ const createProfile: AzureFunction = withAuth<Auth0UserProfile>(
     async (context: Context, user) => {
         const userContainer = await cosmos.getUsersContainer();
 
+        const { resources: users } = await userContainer.items
+            .query<UserProfileCosmosResult>({
+                query: `SELECT TOP 1 * FROM c WHERE c["userId"] = @userId`,
+                parameters: [{ name: '@userId', value: user.userId }],
+            })
+            .fetchAll();
+
+        if (!users[0]) {
+            context.res = { status: 404, body: `User already exists. User ID: ${user.userId}` };
+            return;
+        }
+
         await userContainer.items.create<Partial<UserProfileCosmosResult>>({
             userId: user.userId,
             emailAddress: user.emailAddress,
