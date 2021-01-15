@@ -31,7 +31,7 @@ const httpTrigger: AzureFunction = withAuth(
                     query: `SELECT * FROM c WHERE c["hobbyId"] = @hobbyId ORDER BY c["_ts"] DESC`,
                     parameters: [{ name: '@hobbyId', value: hobbies[0].id }],
                 },
-                { maxItemCount: 20, continuationToken }
+                { maxItemCount: 20, continuationToken, partitionKey: hobbies[0].id }
             )
             .fetchNext();
 
