@@ -28,6 +28,12 @@ export const getHobbiesContainer = async () => {
 
 export const getPostsContainer = async () => {
     const db = await getDatabase();
-    const { container } = await db.containers.createIfNotExists({ id: 'posts', partitionKey: '/id' });
+    const { container } = await db.containers.createIfNotExists({ id: 'posts', partitionKey: '/hobbyId' });
+    return container;
+};
+
+export const getCommentsContainer = async () => {
+    const db = await getDatabase();
+    const { container } = await db.containers.createIfNotExists({ id: 'comments', partitionKey: '/userUid' });
     return container;
 };
