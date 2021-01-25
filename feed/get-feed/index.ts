@@ -22,12 +22,12 @@ const httpTrigger: AzureFunction = withAuth(
                 })
                 .fetchAll();
 
-            if (!users[0]) {
+            if (users.length === 0) {
                 context.res = { status: 404, body: `User not found: ${token.sub}` };
                 return;
             }
 
-            const postQuery = await postsContainer.items
+            const { resources, postData } = await postsContainer.items
                 .query<PostCosmosResult>(
                     {
                         query: `SELECT * FROM c WHERE ARRAY_CONTAINS(@hobbyIds, c["hobbyId"]) ORDER BY c["_ts"] DESC`,
@@ -37,7 +37,7 @@ const httpTrigger: AzureFunction = withAuth(
                 )
                 .fetchNext();
 
-            if (postQuery.resources.length === 0) {
+            if (postData?.length === 0) {
                 context.res = { status: 404, body: 'No posts found' };
                 return;
             }

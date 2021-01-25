@@ -15,7 +15,7 @@ const createProfile: AzureFunction = withAuth<Auth0UserProfile>(
             })
             .fetchAll();
 
-        if (!users[0]) {
+        if (users?.length > 0) {
             context.res = { status: 404, body: `User already exists. User ID: ${user.userId}` };
             return;
         }
